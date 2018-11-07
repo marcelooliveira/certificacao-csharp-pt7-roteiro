@@ -14,9 +14,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01.03 delegados", "01.03 delegados", "{5C37735D-6AC9-437E-B840-C044CE83EB93}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01.04 lambda", "01.04 lambda", "{378CCCA9-1EB7-4C5F-9699-6AEB6451C74C}"
-	ProjectSection(SolutionItems) = preProject
-		ex01.md = ex01.md
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01.05 metodos anonimos", "01.05 metodos anonimos", "{40CEEF66-F02D-4FD0-A158-1657577FD371}"
 EndProject
@@ -88,6 +85,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "antes", "antes", "{97FF5836-0C8B-4FAF-84BE-D87827121D14}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "depois", "depois", "{223FF7E0-B729-4DA2-885E-4320BDBB9DAF}"
+	ProjectSection(SolutionItems) = preProject
+		ex35.md = ex35.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "antes", "antes", "{869B99D7-A9A5-414D-ACEC-53E5AECFDF46}"
 EndProject
