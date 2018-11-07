@@ -14,20 +14,62 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01.03 delegados", "01.03 delegados", "{5C37735D-6AC9-437E-B840-C044CE83EB93}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01.04 lambda", "01.04 lambda", "{378CCCA9-1EB7-4C5F-9699-6AEB6451C74C}"
+	ProjectSection(SolutionItems) = preProject
+		ex01.md = ex01.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01.05 metodos anonimos", "01.05 metodos anonimos", "{40CEEF66-F02D-4FD0-A158-1657577FD371}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02.01 consultar", "02.01 consultar", "{A41FF17C-4E04-4838-B7F5-FB8452669B57}"
+	ProjectSection(SolutionItems) = preProject
+		ex03.md = ex03.md
+		ex04.md = ex04.md
+		ex05.md = ex05.md
+		ex06.md = ex06.md
+		ex07.md = ex07.md
+		ex08.md = ex08.md
+		ex15.md = ex15.md
+		ex18.md = ex18.md
+		ex19.md = ex19.md
+		ex20.md = ex20.md
+		ex23.md = ex23.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02.02 sintaxe de metodo", "02.02 sintaxe de metodo", "{6685C2CD-35AD-4A82-B4F1-B2D75566E952}"
+	ProjectSection(SolutionItems) = preProject
+		ex11.md = ex11.md
+		ex12.md = ex12.md
+		ex13.md = ex13.md
+		ex14.md = ex14.md
+		ex16.md = ex16.md
+		ex17.md = ex17.md
+		ex21.md = ex21.md
+		ex22.md = ex22.md
+		ex24.md = ex24.md
+		ex25.md = ex25.md
+		ex27.md = ex27.md
+		ex28.md = ex28.md
+		ex29.md = ex29.md
+		ex30.md = ex30.md
+		ex31.md = ex31.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02.03 sintaxe de consulta", "02.03 sintaxe de consulta", "{DBB4E0D7-9DCE-4D70-93EF-BC7D645C9F9B}"
+	ProjectSection(SolutionItems) = preProject
+		ex09.md = ex09.md
+		ex10.md = ex10.md
+		ex26.md = ex26.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02.04 tipos anonimos", "02.04 tipos anonimos", "{B9CE7BE5-6394-4096-AE55-4824502C92E1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02.05 forcar execucao", "02.05 forcar execucao", "{CB3DFBF1-56B0-41F6-B744-FFED7E0EFE4E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02.06 linq to xml", "02.06 linq to xml", "{41D1D2C5-28CD-4FD3-9167-9294D956EEED}"
+	ProjectSection(SolutionItems) = preProject
+		ex01.md = ex01.md
+		ex02.md = ex02.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionProperties) = preSolution
