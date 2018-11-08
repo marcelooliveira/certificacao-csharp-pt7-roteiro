@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.28010.2041
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01 eventos", "01 eventos", "{39C0490E-1B72-42C2-8043-A3A398A4E5F8}"
+	ProjectSection(SolutionItems) = preProject
+		EventosECallbacks.md = EventosECallbacks.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02 linq", "02 linq", "{1251E13E-E3F5-42F1-A998-60D096B86887}"
 EndProject
