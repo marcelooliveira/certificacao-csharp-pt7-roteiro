@@ -1,65 +1,81 @@
 # Criar e implementar enventos e callbacks
 
+Vamos começar o curso com um uma simples classe chamada `Campainha`, cuja
+única função é tocar. 
+
+```csharp
+class Campainha
+{
+    public void Tocar()
+    {
+        Console.WriteLine("A campainha tocou.");
+    }
+}
+```
+
+Então criamos um programa simples para utilizar essa classe:
+
+```csharp
+class Program
+{
+    static void Main(string[] args)
+    {
+        Campainha campainha = new Campainha();
+        campainha.Tocar();
+        Console.ReadKey();
+    }
+}
+```
+
+Note como a execução do programa segue uma ordem sequencial:
+
+1. E vamos criar um programa que instanciando essa classe
+2. Em seguida, tocamos a campainha, chamando o método da classe
+3. Depois, esperamos o usuário teclar algo
+
 Até aqui, você viu que a execução de um programa avança de instrução para
 declaração, processando os dados de acordo com o
 declarações que são executadas. Na computação tradicional,
-o programa fluiria do início ao fim, começando
+o programa flui do início ao fim, começando
 com os dados de entrada e produzindo alguma saída antes
-de terminar. Entretanto, aplicações modernas possuem fluxos que
+de terminar. 
+
+Agora imagine que você precise executar um código dentro da classe `Program`,
+que será chamado sempre que o método `Campainha`, no lugar do pseudocódigo abaixo:
+
+```csharp
+static void Main(string[] args)
+{
+    Campainha campainha = new Campainha();
+    
+    //pseudocódigo
+    SE A CAMPAINHA TOCAR, EXECUTE
+        Console.WriteLine("A campainha tocou.");
+
+    campainha.Tocar();
+    Console.ReadKey();
+}
+```
+
+Como podemos ver, isso quebrará a execução sequencial, pois o novo código deverá
+ser executado antes da linha seguinte à chamada do método `Tocar()`.
+
+Por isso, aplicações modernas possuem fluxos que
 funcionam de maneira diferente da computação tradicional. 
 Grande aplicações envolvem componentes que se comunicam através 
 de mensagens, e isso produz um fluxo que foge da execução sequencial
 (linha-a-linha).
 
-Para criar soluções que funcionem dessa maneira
+Para criar soluções que funcionem dessa maneira,
 precisamos de um mecanismo pelo qual um componente possa
 enviar mensagens para outro. Com a linguagem C#, podemos realizar isso
 através dos **eventos**.
 
-**Manipuladores de eventos**
+**Delegado de ação**
 
-Nos dias anteriores, async e await foram adicionados
-a linguagem C#, um programa seria forçado a usar
-eventos para gerenciar operações assíncronas. Antes
-iniciar uma tarefa assíncrona, como buscar um
-página da web de um servidor, um programa precisaria
-ligar um método a um evento que seria gerado
-Quando a ação foi concluída. Hoje, os eventos são
-mais freqüentemente usado para processos
-comunicação.
+O pseudocódigo acima precisa é de algum tipo de "gancho" que seja chamado assim
+que o método `Tocar` da classe `Campainha` seja chamado.
 
-Vimos que um objeto pode fornecer um serviço
-para outros objetos, expondo um método público que pode
-ser chamado para executar esse serviço. Por exemplo, em um
-aplicativo de console, um programa pode usar o
-Método WriteLine exposto pelo console para
-exibir mensagens para o usuário do programa.
-Eventos são usados no reverso dessa situação,
-Quando você deseja que um objeto notifique outro objeto
-Aconteceu alguma coisa. Um objeto pode ser feito para
-publicar eventos aos quais outros objetos podem se inscrever.
-Componentes de uma solução que se comunicam usando
-eventos deste modo são descritos como fracamente acoplados.
-A única coisa que um componente tem que saber sobre o
-outro é o design da publicação e se inscrever
-mecanismo.
-
-Delegados e eventos
-
-Para entender como os eventos são implementados, você
-para entender o conceito de um delegado C #. Isto é um
-peça de dados que contém uma referência a um determinado
-método em uma classe. Quando você pega seu carro por um
-serviço que você dá ao atendente de garagem seu telefone
-número para que eles possam te chamar Quando seu carro estiver pronto para
-ser apanhada. Você pode pensar em um delegado como o
-“Número de telefone” de um método em uma classe. Um evento
-editor é dado um delegado que descreve o
-método no assinante. O editor pode então ligar
-esse delegado Quando o evento dado ocorre e o
-método será executado no assinante.
-
-Delegado de ação
 
 As bibliotecas .NET fornecem um número pré-definido de
 tipos de delegados. Na seção "Criar delegados", você
