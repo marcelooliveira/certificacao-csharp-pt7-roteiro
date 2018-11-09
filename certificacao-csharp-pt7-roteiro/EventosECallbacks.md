@@ -408,18 +408,22 @@ class Campainha
 }
 ```
 
-O delegado EventHandler refere-se a um assinante
-método que aceita dois argumentos. O primeiro
-argumento é uma referência ao objeto que gera o evento.
-O segundo argumento é uma referência a um objeto de
-tipo EventArgs que fornece informações sobre o
-evento. Na Listagem 1-68, o segundo argumento é definido
-para EventArgs. Vazio, para indicar que esse evento
+O delegado **EventHandler** OnCampainhaTocou aceita dois argumentos. 
+
+- O primeiro argumento é uma referência ao objeto que gera o evento.
+- O segundo argumento é uma referência a um objeto de tipo EventArgs que fornece informações sobre oevento.
+
+Note que o segundo argumento é definido
+para um EventArgs vazio (empty), para indicar que esse evento
 não produz nenhum dado, é simplesmente uma notificação
-que um evento ocorreu.
-A assinatura dos métodos a serem adicionados a este
-delegado deve refletir isso. O método CampainhaTocou1 aceita dois parâmetros e pode ser usado com
-este delegado.
+de que um evento ocorreu.
+
+```csharp
+OnCampainhaTocou(this, EventArgs.Empty);
+```
+
+Agora, as assinaturas dos métodos a serem adicionados a este
+delegado devem refletir isso.
 
 ```csharp
 static void CampainhaTocou1(object sender, EventArgs e)
@@ -433,24 +437,30 @@ static void CampainhaTocou2(object sender, EventArgs e)
 }
 ```
 
-Use EventArgs para entregar informações sobre eventos
+Somente após essas alterações, os método CampainhaTocou1 e CampainhaTocou2 
+aceita dois parâmetros e pode ser usado com este delegado.
 
-A classe Campainha criada na Listagem 1—68 permite um
-assinante para receber uma notificação de que uma campainha
-foi criado, mas não fornece ao assinante
-qualquer descrição da campainha. É útil se os assinantes
-pode receber informações sobre a campainha. Talvez um
-string descrevendo a localização da campainha seria
-útil.
+**Use EventArgs para entregar informações sobre eventos**
+
+A classe Campainha permite que um
+assinante receba uma notificação de que um evento de campainha
+foi gerado, mas não fornece ao assinante
+qualquer descrição do evento.
+
+
+
+Agora imagine uma campainha do mundo real, onde você tem um sistema
+de porteiro eletrônico de um prédio, que permite acionar a campainha de um 
+apartamento específico.
+
+Seria útil se os assinantes pode receber informações sobre a 
+campainha, como por exemplo, o número do apartamento.
 
 Você pode fazer isso criando uma classe que possa entregar
-esta informação e, em seguida, use um EventHandler para
-entregue Isso. Listagem 1—69 mostra o CampainhaEventArgs
-class, que é uma subclasse da classe Eve ntArgs,
-e adiciona uma propriedade Location a ele. Se mais evento
-informação é necessária, talvez a data e hora da
-campainha, estes podem ser adicionados ao
-Classe CampainhaEventArgs.
+esta informação (do número do apartamento) e, em seguida, 
+usar um EventHandler para fornecer a informação.
+
+Vamos criar então uma subclasse customizada a partir da classe `EventArgs`:
 
 ```csharp
 class CampainhaEventArgs : EventArgs
@@ -463,21 +473,33 @@ class CampainhaEventArgs : EventArgs
 }
 ```
 
-Agora você tem seu próprio tipo que pode ser usado para
-descreve um evento que ocorreu. O evento é a
-campainha sendo tocada, e o tipo que você criou é
-chamado CampainhaEventAgs. Quando a campainha é levantado nós
-deseja que o manipulador do evento de campainha aceite
-Objetos CampainhaEventArgs para que o manipulador possa ser
-detalhes do evento.
+Note que agora temos:
 
-O delegado EventHandler para o
-Evento OnCampainhaTocou é declarado para entregar
-argumentos do tipo CampainhaEventArgs. 'Quando a
-campainha é tocada pelo método Tocou o evento
-é dada uma referência à campainha e um recém-criado
+- Uma propriedade Apartamento
+- um construtor que alimenta essa propriedade
+
+Você pode adicionar mais informações, conforme necessário.
+
+Agora você tem seu próprio tipo que pode ser usado para
+descreve um evento que ocorreu. 
+
+Como usar a nova classe CampainhaEventArgs em nossa aplicação?
+
+Vamos começar trocando o tipo EventHandler (que por padrão trabalha com EventArgs)
+por um EventHandler genérico: `EventHandler<CampainhaEventArgs>`
+
+```csharp
+public event EventHandler<CampainhaEventArgs> OnCampainhaTocou = delegate { };
+```
+
+Quando a campainha é tocada pelo método Tocou, o evento
+é uma referência à campainha e um recém-criado
 instância de CampainhaEventArgs que descreve o
 evento de campainha.
+
+Vamos modificar também o método Tocar(), para receber o número do apartamento,
+e passar esse número para o objeto CampainhaEventArgs, que será o responsável por transportar essa informação
+até os clientes assinantes.
 
 ```csharp
 class Campainha
@@ -490,11 +512,8 @@ class Campainha
 }
 ```
 
-Assinantes do evento aceitam o
-CampainhaEventArgs e pode usar os dados nele. o
-método CampainhaTocou1 abaixo exibe o
-localização da campainha que obtém de sua
-argumento.
+Outra modificação necessária é adequar os assinantes do evento para que
+eles possam ser associados ao evento:
 
 ```csharp
 static void CampainhaTocou1(object sender, CampainhaEventArgs e)
@@ -503,50 +522,103 @@ static void CampainhaTocou1(object sender, CampainhaEventArgs e)
 }
 ```
 
-Note que uma referência ao mesmo
-O objeto CampainhaEventArgs é passado para cada um dos
-assinantes do evento OnCampainhaTocou. este
-significa que se um dos assinantes modifica o
-conteúdo da descrição do evento, subseqüente
-Assinantes Verá o evento modificado. Isso pode ser
-útil se os assinantes precisam sinalizar que um dado evento
-foi tratado dth, mas também pode ser uma fonte de
-efeitos colaterais indesejados.
+Dessa forma, podemos exibir a informação completa: quando uma campainha foi acionada,
+e também para qual apartamento.
 
-Exceções nos assinantes do evento
+**Exceções nos assinantes do evento**
 
-Agora você sabe como os eventos funcionam. Um número de
-programas podem se inscrever em um evento. Eles fazem isso
+Agora você sabe como os eventos funcionam. Vários
+programas podem se inscrever em um mesmo evento. Eles fazem isso
 vinculando um delegado ao evento. O delegado serve como
-uma referência a um pedaço de código C # que o assinante
-quer correr Quando o evento ocorre. Este pedaço de
-O código é chamado de manipulador de eventos.
+uma referência a **um trecho de código C#** que o assinante
+quer executar quando o evento acontece. Este trecho de
+código é chamado de **manipulador de eventos** (ex.: o método CampainhaTocou1).
 
 Nos nossos programas de exemplo, o evento é uma campainha
 sendo acionada. Quando a campainha é tocada, o evento
-chamará todos os manipuladores de eventos que se inscreveram
-o evento de campainha. Mas o que acontece se um dos eventos
-manipuladores falhar, lançando uma exceção? Se o código em
-um dos assinantes lança uma exceção não identificada
-o processo de tratamento de exceção termina nesse ponto e
-Nenhum outro assinante será notificado. Isso seria
-significa que alguns assinantes não seriam informados
-o evento.
+chamará **todos os manipuladores de eventos** que se inscreveram
+o evento de campainha (os métodos CampainhaTocou1 e CampainhaTocou2). 
+
+Mas o que acontece se um dos eventos
+manipuladores falhar, lançando uma exceção?
+
+Se o código em um dos assinantes lançar uma **exceção não identificada**,
+o processo de tratamento de exceção **termina** nesse ponto e
+nenhum outro assinante será notificado.
+Isso não é nada bom, pois significa que alguns assinantes não seriam notificados.
 
 Para resolver esse problema, cada manipulador de eventos pode ser
-chamado individualmente e, em seguida, um único agregado
+**chamado individualmente** e, em seguida, um único agregado
 exceção criada Que contém todos os detalhes de qualquer
 exceções que foram lançadas pelos manipuladores de eventos.
-A Listagem 1—70 mostra como isso é feito. o
-O método GetInvocationList é usado no
-delegar para obter uma lista de assinantes do evento.
-Esta lista é então iterada e o Dynamiclnvo ke
-método chamado para cada assinante. Quaisquer exceções
-lançados por assinantes são capturados e adicionados a uma lista
-de exceções. Observe que a exceção lançada pelo
-assinante é entregue por um
-TypelnvocationException, e é o interior
-exceção disto que deve ser salvo.
+
+Como podemos implementar esse novo algoritmo?
+
+Em primeiro lugar, vamos refatorar o método Tocar() para criar uma lista de exceções
+que precisam ser tratadas:
+
+```csharp
+public void Tocar(string apartamento)
+{
+    List<Exception> listaExcecoes = new List<Exception>();
+}
+```
+
+O segundo passo é obter a lista de assinantes.
+Usamos o método GetInvocationList para obter uma lista de assinantes do evento.
+Vamos criar um laço e iterar sobre a lista de manipuladores dos assinantes do evento OnCampainhaTocou.
+
+```csharp
+public void Tocar(string apartamento)
+{
+    List<Exception> listaExcecoes = new List<Exception>();
+    foreach (Delegate handler in OnCampainhaTocou.GetInvocationList())
+    {
+    }
+}
+```
+
+Para executar cada um dos delegados, é necessário invocar o método DynamicInvoke da classe Delegate.
+
+Fazemos isso passando como argumentos:
+
+- o objeto Campainha onde ocorreu o evento
+- um novo objeto CampainhaEventArgs com informações sobre o apartamento
+
+```csharp
+public void Tocar(string apartamento)
+{
+    List<Exception> listaExcecoes = new List<Exception>();
+    foreach (Delegate handler in OnCampainhaTocou.GetInvocationList())
+    {
+        handler.DynamicInvoke(this, new CampainhaEventArgs(apartamento));
+    }
+}
+```
+
+Mas até agora, não temos nenhum código para tratar as exceções. Vamos introduzir um bloco try-catch
+para capturar erros e adicioná-los à lista exceptionList quando necessário.
+
+```csharp
+public void Tocar(string apartamento)
+{
+    List<Exception> listaExcecoes = new List<Exception>();
+    foreach (Delegate handler in OnCampainhaTocou.GetInvocationList())
+    {
+        try
+        {
+            handler.DynamicInvoke(this, new CampainhaEventArgs(apartamento));
+        }
+        catch (TargetInvocationException e)
+        {
+            listaExcecoes.Add(e.InnerException);
+        }
+    }
+}
+```
+
+Ao final do método, temos que verificar se alguma exceção foi adicionada à lista.
+Se houver erros na lista, ela é usada para lançar uma nova exceção, do tipo "exceção agregada".
 
 ```csharp
 public void Tocar(string apartamento)
@@ -569,6 +641,35 @@ public void Tocar(string apartamento)
 }
 ```
 
+Note que o código acima permite que todos os assinantes recebam notificações, mesmo se alguns
+deles lançar uma exceção.
+
+E quanto ao código cliente?
+
+Agora falta preparar a classe Program para simular e lidar com exceções.
+
+Vamos provocar exceções deliberadamente, em cada um dos manipuladores de evento:
+
+```csharp
+static void CampainhaTocou1(object source, CampainhaEventArgs e)
+{
+    Console.WriteLine("método CampainhaTocou1() foi chamado");
+    Console.WriteLine("Apartamento: {0}", e.Apartamento);
+    throw new Exception("Erro em CampainhaTocou1");
+}
+
+static void CampainhaTocou2(object source, CampainhaEventArgs e)
+{
+    Console.WriteLine("método CampainhaTocou2() foi chamado");
+    Console.WriteLine("Apartamento: {0}", e.Apartamento);
+    throw new Exception("Erro em CampainhaTocou2");
+}
+```
+
+Nenhum desses erros deverá impedir a notificação de todos os assinantes do evento.
+
+Caso uma exceção agregada ocorra, podemos capturá-la, e varrer a lista
+de exceções internas, exibindo suas informações:
 
 ```csharp
 Campainha campainha = new Campainha();
@@ -586,8 +687,8 @@ catch (AggregateException agg)
 Console.ReadKey();
 ```
 
-Quando este programa de amostra é executado, o resultado é
-Segue. Observe que as exceções são listadas após a
+Quando este programa de exemplo é executado, o resultado abaixo é mostrado. 
+Observe que as exceções são listadas após a
 os métodos do assinante foram concluídos.
 
 ```
@@ -599,35 +700,96 @@ Erro em CampainhaTocou1
 Erro em CampainhaTocou2
 ```
 
-Criar Delegados
+**Criar Delegados**
 
-Até agora, usamos o Acti e
-Tipos EventHandler, que fornecem pré-definidos
-delegados. Podemos, no entanto, criar nossos próprios delegados.
-Até agora, os delegados que temos visto
-Mantinha uma coleção de referências de métodos. Nosso
-aplicativos usaram os operadores + = e - = para
-adicione referências de método a um determinado delegado. Você pode
-também criar um delegado que se refere a um único método em
+Até agora, usamos actions e tipos EventHandler, que fornecem 
+**delegados pré-definidos**.
+
+Mas se quisermos, podemos criar nossos próprios delegados.
+
+Até agora, os delegados que conhecemos mantêm uma coleção 
+de referências de métodos. Nosso código usou os operadores += e -= para
+adicionar referências de método a um determinado delegado.
+
+Você pode também criar um delegado que se refere a um único método em
 um objeto.
 
-Um tipo de delegado é declarado usando o delegado
-palavra chave. A instrução aqui cria um tipo de delegado
-chamado IntOperation que pode se referir a um método de
-digite inteiro que aceita dois parâmetros inteiros.
+Para demonstrar, camos criar dois métodos que realizam operações de somar e subtrair.
+
+```csharp
+static int Somar(int a, int b)
+{
+    Console.WriteLine("Foi chamado: Somar");
+    return a + b;
+}
+
+static int Subtrair(int a, int b)
+{
+    Console.WriteLine("Foi chamado: Subtrair");
+    return a - b;
+}
+```
+
+Essas duas operações podem ser facilmente chamadas no código cliente:
+
+```csharp
+Console.WriteLine(Somar(2, 2));
+Console.WriteLine(Subtrair(2, 2));
+```
+
+Mas e se quisermos armazenar uma **referência aos dois métodos**, e executar a **partir 
+dessa referência**, em vez de diretamente pelos métodos?
+
+```csharp
+[Tipo???] op = Somar
+Console.WriteLine(op(2, 2));
+
+op = Subtrair;
+Console.WriteLine(op(2, 2));
+```
+
+Mas que tipo devemos utilizar para declarar a variável **op**?
+
+Precisamos de um **delegado**.
+
+Um tipo de delegado é declarado usando a
+palavra chave **delegate**. A instrução aqui cria um tipo de delegado
+chamado **Operacao** que pode se referir a um método do tipo inteiro, que aceita 
+dois parâmetros inteiros.
 
 ```csharp
 delegate int Operacao(int a, int b);
 ```
 
-Um programa pode agora criar variáveis delegadas de
-tipo IntOperation. Quando uma variável delegada é
-declarou que ele pode ser configurado para referenciar um determinado método. Em
-Listagem 1-71 abaixo da variável op é feita para se referir
-primeiro para um método chamado Add e, em seguida, para um método
-chamado subtrair. Cada vez que op é chamado de "doente
-execute o método para o qual foi feito referência.
-usando o sistema;
+Um programa pode agora criar *variáveis delegate* de
+tipo Operacao. Quando uma variável delegada é
+declarada, ela pode ser configurada para referenciar um determinado método. 
+
+No código abaixo, abaixo da variável op é feita para se referir
+primeiro para um método chamado Somar e
+
+```csharp
+var op = new Operacao(Somar);
+Console.WriteLine(op(2, 2));
+```
+
+Outra forma de declaração que tem o mesmo efeito é:
+
+```csharp
+Operacao op = Somar;
+Console.WriteLine(op(2, 2));
+```
+
+em seguida, para um método
+chamado Subtrair. 
+
+```csharp
+op = Subtrair;
+Console.WriteLine(op(2, 2));
+```
+
+Cada vez que op é chamado, ele
+executará o método ao qual faz referência.
 
 ```csharp
 using System;
@@ -663,76 +825,63 @@ namespace _01_03
 }
 ```
 
-Observe que o código na Listagem 1—71 também mostra que um
+Observe que o código acima também mostra que um
 programa pode criar explicitamente uma instância do
-classe delegada. O compilador C # será automaticamente
+classe delegada. O compilador C# será automaticamente
 gerar o código para criar uma instância delegada Quando um
 método é atribuído à variável delegada.
+
 Os delegados podem ser usados exatamente da mesma maneira que
 qualquer outra variável. Você pode ter listas e dicionários
 que contêm delegados e você também pode usá-los como
 parâmetros para métodos.
 
-Delegado vs delegado
+**Delegado vs delegado**
 
-É importante entender a diferença entre
-delegado (com minúscula d) e Delegado (com
-maiúscula D). A palavra delegado com um menor
-case (1 é a palavra-chave usada em um programa c # que informa
-o compilador para criar um tipo de delegado. É usado em
-Listagem 1—71 para criar o tipo de delegado
-IntOperation.
+É importante entender a diferença entre delegado (com d minúscula) e Delegado 
+(com D maiúscula). A palavra delegate (minúscula) informa o compilador C# para 
+criar um tipo de delegado. 
 
 ```csharp
 delegate int Operacao(int a, int b);
 ```
 
-A palavra Delegado com um D maiúsculo é o
-classe abstrata que define o comportamento do delegado
-instâncias. Depois que a palavra-chave delegada tiver sido
-usado para criar um tipo de delegado, objetos desse delegado
-type Será realizado como instâncias de delegado.
+A palavra Delegate com um D maiúsculo é o
+classe abstrata que define o comportamento de instâncias do delegate. 
+
+Depois de usarmos a palavra-chave delegada para criar um tipo de delegado, 
+objetos desse tipo delegate serão criados como instâncias de delegado.
 
 ```csharp
 Operacao op;
 ```
 
-Esta declaração cria um valor IntOperation
-chamado op. A variável op é uma instância do
-System.MultiCastDelegatetyn ?? ChiSaCh? D
-da classe Delegado. Um programa pode usar o
-variável op para manter uma coleção de assinantes
-ou para se referir a um único método.
-
-Use expressões lambda
-(métodos anônimos)
+**Usando expressões lambda
+(métodos anônimos)**
 
 Delegados permitem que um programa trate comportamentos
-(métodos em objetos) como itens de dados. Um delegado é um
+(métodos em objetos) como *itens de dados*. Um delegado é um
 item de dados que serve como referência a um método em
-um objeto. Isso adiciona uma quantidade enorme de
-flexibilidade para programadores. No entanto, os delegados são
-trabalho duro para usar. O tipo de delegado real deve primeiro
-ser declarado e, em seguida, feito para se referir a um determinado
-método contendo o código que descreve a ação
+um objeto. Isso dá uma grande flexibilidade aos programadores.
+
+No entanto, usar delegados dá trabalho. O tipo delegate deve ser declarado primeiro
+e, em seguida, armazenar uma referência a um determinado método contendo o código 
 a ser executado.
 
-As expressões lambda são uma maneira pura de expressar
-o “algo entra, algo acontece e
-algo sai ”parte de comportamentos. Os tipos de
-os elementos e o resultado a ser devolvido são
-inferido a partir do contexto em que o lambda
-expressão é usada. Considere a seguinte declaração.
+As **expressões lambda** são uma maneira simples de expressar comportamentos
+seguindo a lógica "algo entra, algo acontece e algo sai".
+
+Considere a seguinte declaração.
 
 ```csharp
 delegate int Operacao(int a, int b);
 ```
 
-Esta declaração declara o delegado IntOperation que foi usado na Listagem. o
-Delegado de IntOperation pode se referir a qualquer operação
+Esta declaração declara o delegado Operacao que foi usado na listagem. o
+Delegado de Operacao pode se referir a qualquer operação
 que leva em dois parâmetros inteiros e retorna um
 resultado inteiro. Agora considere esta afirmação, que
-cria um delegado IntOperation chamado adicionar e
+cria um delegado Operacao chamado adicionar e
 atribui-lo a uma expressão lambda que aceita dois
 parâmetros de entrada e retorna sua soma.
 
@@ -740,25 +889,19 @@ parâmetros de entrada e retorna sua soma.
 Operacao adicionar = (a, b) => a + b;
 ```
 
-O operador `=>` é chamado de operador lambda. o
-os itens aeb na esquerda da expressão lambda são
-mapeado nos parâmetros do método definidos pelo
-delegar. A declaração 011 o direito do lambda
-expressão dá o comportamento da expressão, e
-neste caso, adiciona os dois parâmetros juntos.
-Ao descrever o comportamento do lambda
-expressão você pode usar a frase "entra em" para
-descreva o que está acontecendo. Neste caso, você poderia dizer
-“Aeb entrem em um plus b.” O nome lambda vem
-de lambda calculus, um ramo da matemática que
-diz respeito à "abstração funcional".
+O operador `=>` é chamado de **operador lambda**. Os itens **a e b** na esquerda da 
+expressão lambda são **parâmetros** do método definidos pelo
+delegate. A declaração à direita da expressão lambda
+define o **comportamento** da expressão e retorna a soma os dois parâmetros.
+
 Esta expressão lambda aceita dois inteiros
 parâmetros e retorna um inteiro. Lambda
 expressões podem aceitar vários parâmetros e
 contém várias instruções, em que o caso
-declarações são colocadas em um bloco. Listagem 1-72 mostra
-como criar uma expressão lambda que imprime um
-mensagem, bem como realizar um cálculo.
+declarações são colocadas em um bloco.
+
+O código abaixo mostra como criar uma expressão lambda que imprime uma
+mensagem, e realiza um cálculo.
 
 ```csharp
 Operacao adicionar = (a, b) =>
@@ -768,24 +911,34 @@ Operacao adicionar = (a, b) =>
 };
 ```
 
-Fechamentos
+**Fechamentos (Closures)**
 
 O código em uma expressão lambda pode acessar variáveis
 no código em torno dele. Essas variáveis devem ser
-disponível Quando a expressão lambda é executada,
+disponível quando a expressão lambda é executada,
 o compilador estenderá a vida útil das variáveis usadas
 expressões lambda.
-Listagem 1—73 mostra como isso funciona. O método
-SetLo cal declara uma variável local chamada 1 ocal Int
+
+O código abaixo mostra como isso funciona. O método
+SetValorLocal declara uma variável local chamada valorLocal
 e define seu valor para 99. Em circunstâncias normais
-a variável local Int seria destruída após
-conclusão do método SetLocal. No entanto, o
-A variável localInt é usada em uma expressão lambda,
-Qual é atribuído ao delegado getLocal. o
-compilador garante que a variável lo cal Int seja
-disponível para uso na expressão lambda Quando é
+a variável valorLocal seria destruída após
+conclusão do método SetValorLocal.
+
+```csharp
+static void SetValorLocal()
+{
+    int valorLocal = 99;
+    getValorLocal = () => valorLocal;
+}
+```
+
+No entanto, a variável valorLocal é usada em uma expressão lambda,
+qué é atribuído ao delegado **getValorLocal**. O
+compilador garante que a variável valorLocal seja
+disponível para uso na expressão lambda quando é
 posteriormente chamado do método Main. este
-extensão da vida variável é chamado de encerramento.
+extensão da vida variável é chamado de **encerramento**.
 
 ```csharp
 class Program
@@ -806,7 +959,7 @@ class Program
 }
 ```
 
-Tipos nativos para uso com expressões lambda 
+**Tipos nativos para uso com expressões lambda **
 
 Considere as três declarações a seguir:
 
@@ -817,70 +970,82 @@ Console.WriteLine(adicionar(2, 2);
 ```
 
 A primeira instrução cria um delegado chamado
-IntOperation que aceita dois valores inteiros e
-retorna um resultado inteiro. A segunda declaração
-cria uma IntOperation chamada add que usa um
-expressão lambda para descrever o que faz, que é
-para adicionar os dois parâmetros juntos e retornar o
-resultado. A terceira declaração realmente usa o add
-operação para calcular e imprimir 2 + 2.
-Isso funciona, mas tivemos que criar o
-Tipo delegado IntOperation para especificar um comportamento
-que aceita dois inteiros e retorna sua soma antes
-poderíamos criar algo que se referisse a um lambda
-expressão desse tipo. Há um certo número de
-em "tipos delegados que podemos usar para fornecer um contexto
-para uma expressão lambda.
+Operacao que aceita dois valores inteiros e
+retorna um resultado inteiro:
 
-Os tipos Func fornecem uma gama de delegados para
-métodos que aceitam valores e retornam resultados. Listagem
-1—74 mostra como o tipo Func é usado para criar um
-adicionar comportamento que tenha o mesmo tipo de retorno e
-parâmetros como o delegado IntOperation na Listagem
-1-71. Existem versões do tipo Func que aceitam
-até 16 itens de entrada. O método add aqui aceita
-dois inteiros e retorna um inteiro como resultado.
+```csharp
+delegate int Operacao(int a, int b);
+```
+
+A segunda declaração cria uma Operacao chamada adicionar que usa um
+expressão lambda para descrever o que faz, para somar os dois parâmetros 
+e retornar o resultado.
+
+```csharp
+Operacao adicionar = (a, b) => a + b;
+```
+
+A terceira declaração realmente usa a variável adicionar operação para calcular 
+e imprimir 2 + 2.
+
+```csharp
+Console.WriteLine(adicionar(2, 2);
+```
+
+Isso funciona, mas tivemos que criar o tipo delegate Operacao para especificar um 
+comportamento que aceita dois inteiros e retorna sua soma antes
+poderíamos criar algo que se referisse a uma expressão lambda
+desse tipo.
+
+Os tipos **Func** fornecem vários delegados para
+métodos que aceitam valores e retornam resultados:
 
 ```csharp
 static Func<int, int, int> adicionar = (a, b) => a + b;
 ```
 
-Se a expressão lambda não retornar um resultado,
-você pode usar o tipo de ação que você viu anteriormente
-quando criamos nossos primeiros delegados. A declaração
-abaixo cria um delegado chamado logM-es sage que
-refere-se a uma expressão lambda que aceita uma string
-e depois imprime no console. Para diferentes formas
-de registrar o logMes 3 idade delegado pode ser anexado ao
-outros métodos que salvam os dados do log em um arquivo.
+Existem versões do tipo Func que aceitam
+até 16 itens de entrada. O método *adicionar* aqui aceita
+dois inteiros e retorna um inteiro como resultado.
+
+Se a expressão lambda *não retornar um resultado*,
+você pode usar o tipo de `action` que você viu anteriormente
+quando criamos nossos primeiros delegados.
+
+
+A declaração abaixo cria um delegado chamado logMensagem, que
+referencia a uma expressão lambda que aceita uma string
+e depois a imprime no console.
 
 ```csharp
 static Action<string> logMensagem = (mensagem) => Console.WriteLine(mensagem);
 ```
 
-O predicado incorporado ao tipo de delegado permite
+Para diferentes formas de registrar o delegate logMensagem pode ser anexado ao
+outros métodos que salvam os dados do log em um arquivo.
+
+O predicado incorporado ao tipo delegate permite
 criar código que leva um valor de um determinado tipo e
-retorna verdadeiro ou falso. The divideByThree
-predicado abaixo retorna true se o valor for divisível
-por 3.
+retorna verdadeiro ou falso. O predicado divisivelPor3
+abaixo retorna true se o valor for divisível por 3.
 
 ```csharp
 static Predicate<int> divisivelPor3 = (i) => i % 3 == 0;
 ```
 
-Métodos anônimos
+**Métodos anônimos**
 
-Até agora temos usado expressões lambda
+Até aqui usamos expressões lambda
 que estão ligados aos delegados. O delegado fornece um
-name pelo qual o código na expressão lambda pode
+nome pelo qual o código na expressão lambda pode
 ser acessado. No entanto, uma expressão lambda também pode
 ser usado diretamente em um contexto onde você quer apenas
-expressar um comportamento particular. O programa na listagem
-1-75 usa a tarefa. Corra para iniciar uma nova tarefa. O código
-realizada pela tarefa é expressa diretamente como
-expressão lambda, que é dada como um argumento para
-a tarefa . Execute o método. Em nenhum momento esse código
-já tem um nome.
+expressar um comportamento particular. 
+
+O programa abaixo usa a tarefa. Ao rodar esse programa, uma nova tarefa é iniciada.
+O código executado pela tarefa é expresso diretamente como
+**expressão lambda**, que é fornecido como um argumento para
+a tarefa.
 
 ```csharp
 class Program
@@ -902,5 +1067,5 @@ class Program
 ```
 
 Uma expressão lambda usada desta maneira pode ser
-descrito como um método anônimo; porque é um
-código funcional que não tem nome.
+descrito como um **método anônimo**, porque é um
+**código funcional** que não tem nome.

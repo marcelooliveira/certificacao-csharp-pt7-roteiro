@@ -20,7 +20,9 @@ namespace _01_03
 
         static void Main(string[] args)
         {
-            var op = new Operacao(Somar);
+            //var op = new Operacao(Somar);
+            Operacao op = Somar;
+
             Console.WriteLine(op(2, 2));
 
             op = Subtrair;
