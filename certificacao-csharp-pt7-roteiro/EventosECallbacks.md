@@ -49,8 +49,8 @@ static void Main(string[] args)
     Campainha campainha = new Campainha();
     
     //pseudocódigo
-    SE A CAMPAINHA TOCAR, EXECUTE
-        Console.WriteLine("A campainha tocou.");
+    //SE A CAMPAINHA TOCAR, EXECUTE
+    //    Console.WriteLine("A campainha tocou.");
 
     campainha.Tocar();
     Console.ReadKey();
@@ -76,27 +76,119 @@ através dos **eventos**.
 O pseudocódigo acima precisa é de algum tipo de "gancho" que seja chamado assim
 que o método `Tocar` da classe `Campainha` seja chamado.
 
+Em outras palavras, o método `Tocar` precisa "delegar uma ação", isto é, entregar
+o controle da execução para o pseudocódigo que queremos criar na classe `Program`.
+
+Mas a classe Campainha não sabe nada sobre a classe Program. Então como podemos
+fazer essa comunicação? Aqui entra o **delegado de ação**.
+
+A classe Campainha vai **expor** uma propriedade que pode ou não ser usada pelos
+seus clientes. Essa propriedade é um **delegado de ação**, ou `Action`. Vamos
+chamar essa action de `OnCampainhaTocou`:
+
+```csharp
+class Campainha
+{
+    public Action OnCampainhaTocou { get; set; }
+
+    public void Tocar()
+    {
+        Console.WriteLine("A campainha tocou.");
+    }
+}
+```
+
+E como fazemos para essa `action` ser executada?
+
+```csharp
+public void Tocar()
+{
+    OnCampainhaTocou();
+}
+```
+
+Note que `OnCampainhaTocou` é executado como um método. Por quê? Porque é realmente um método.
+Melhor dizendo, podemos pensar num delegado de ação como um **ponteiro para um método**.
+
+Quando executamos o código neste momento, tomaremos uma **exceção de referência nula**. Mas por quê?
+
+Acontece que `OnCampainhaTocou` é ma propriedade que armazena um **tipo de referência**.
+Como ela nunca foi inicializada, a chamada na linha `OnCampainhaTocou();` lança uma exceção de referência nula.
+
+Por isso, temos que tomar cuidado: antes de executar a action, é preciso ver se ela foi incializada:
+
+```csharp
+public void Tocar()
+{
+    if (OnCampainhaTocou != null)
+    {
+        OnCampainhaTocou();
+    }
+}
+```
+
+E agora, para consumir a action, vamos adicionar 2 métodos à classe Program,
+que não fazem nada além de escrever uma mensagem no console:
+
+```csharp
+class Program
+{
+    static void CampainhaTocou1()
+    {
+        Console.WriteLine("A campainha tocou.");
+    }
+```
+
+Falta ainda "amarrar" esses métodos como a action da classe `Campainha`.
+
+Associamos um método existente com a propriedade "action" da `OnCampainhaTocou`
+com o operador **+=** :
+
+```csharp
+Campainha campainha = new Campainha();
+campainha.OnCampainhaTocou += CampainhaTocou1;
+```
+
+Rodando a aplicação, temos a mensagem:
+
+![File](file.png)
+
+Podemos pensar na action OnCampainhaTocou como um **"evento"**.
+
+Como vimos, um delegado de ação permite à classe Campainha executar um código que
+está numa classe externa (Program), que a classe Campainha não precisa conhecer.
+
+Outra característica de uma propriedade action é que ela pode ser associada a mais
+de um método. Vamos comprovar isso criando mais um método na classe programa:
+
+```csharp
+static void CampainhaTocou2()
+{
+    Console.WriteLine("A campainha tocou.");
+}
+```
+
+A agora basta associar a action também a esse novo método
+
+```csharp
+Campainha campainha = new Campainha();
+campainha.OnCampainhaTocou += CampainhaTocou1;
+campainha.OnCampainhaTocou += CampainhaTocou2;
+```
+
+Rodando a aplicação novamente, temos
+
+![File2](file2.png)
+
+Como vimos, ambos os métodos associados foram executados após o método `Tocar()` invocar a action.
 
 As bibliotecas .NET fornecem um número pré-definido de
-tipos de delegados. Na seção "Criar delegados", você
-vai descobrir como criar seus próprios tipos de delegados.
-Há uma série de ações pré-definidas
 tipos de delegados. O delegado de ação mais simples
 representa uma referência a um método que não
 retornar um resultado (o método é do tipo void) e
-não aceita nenhum parâmetro. Você pode usar um
-Ação para criar um ponto de ligação para assinantes.
-A Listagem 1-64 mostra como um delegado da Action pode ser
-usado para criar um editor de eventos. Ele contém um
-Classe de campainha que publica para assinantes Quando um
-campainha é levantado. O evento Action delegate é chamado
-OnCampainhaTocou. Um processo interessado em campainhas pode
-associar assinantes a este evento. O método Tocar é chamado na campainha para tocar a campainha. Quando
-O Tocar executa primeiro verificações para ver se algum
-métodos de assinante foram vinculados ao
-Delegado OnCampainhaTocou. Se existirem ouvintes, o delegado
-é chamado.
+não aceita nenhum parâmetro (Como os métodos CampainhaTocou1() e CampainhaTocou1()).
 
+Abaixo, temos o código completo do programa:
 
 ```csharp
 using System;
@@ -141,57 +233,43 @@ namespace _01_02
 }
 ```
 
-Este programa gera a seguinte saída:
+**Inscritos no evento**
 
-```
-A campainha tocou.
-A campainha tocou.
-```
-
-Inscritos no evento
-
-Os assinantes se ligam a um editor usando o sinal + =
-operador. O operador + = está sobrecarregado para aplicar
-entre um delegado e um comportamento. Significa "adicionar isto
-comportamento àqueles para este delegado. ”Os métodos
-em um delegado não é garantido para ser chamado no
-ordenar que eles foram adicionados ao delegado. Você pode
-saiba mais sobre sobrecarga no “Create Types”
-seção.
-
-Os delegados adicionados a um evento publicado são chamados
-o mesmo thread que o segmento publicando o evento. E se
-um delegado bloqueia esse segmento, a publicação inteira
-mecanismo está bloqueado. Isto significa que um malicioso ou
-assinante mal escrito tem a capacidade de bloquear o
-publicação de eventos. Isto é abordado pelo
-editora iniciando uma tarefa individual para executar cada
-os assinantes do evento. O objetivo do Delegado em um
-editor expõe um método chamado
-GetlnvokcationList, que pode ser usado para obter uma
-lista de todos os assinantes. Você pode ver este método em
-usar mais tarde nas “Exceções nos assinantes do evento”
-seção.
+Os "assinantes" de um "publicador de evento" (como a action OnCampainhaTocou) 
+se ligam a um editor usando o operador **+=**. O operador `+=` é uma sobrecarga para aplicar um comportamento
+a um delegado.
 
 Você pode simplificar a chamada do delegado usando
 o operador condicional nulo. Isso só executa uma
 ação se o item especificado não for nulo.
-OnCampainhaTocou? . Invoke ();
-O operador condicional nulo “.?” Significa “somente
-acesse este membro da turma se a referência não for
-nulo. ”Um delegado expõe um método Invoke para
-invoque os métodos ligados ao delegado. o
-O comportamento do código é o mesmo da Listagem 1.
-64, mas o código é mais curto e mais claro.
 
-Cancelar inscrição de um delegado
+```csharp
+//if (OnCampainhaTocou != null)
+//{
+//    OnCampainhaTocou();
+//}
 
-Você viu que o operador += foi sobrecarregado
-para permitir que métodos se liguem a eventos. O método - = é
-usado para cancelar a inscrição de eventos. O programa em
-Listagem 1-66 liga dois métodos à campainha, levanta
-a campainha, desvincula um dos métodos e toca a campainha novamente.
+OnCampainhaTocou?.Invoke();
+```
 
+O operador condicional nulo `.?` Significa 
+"acesse este membro da classe `OnCampainhaTocou` somente se a referência não for
+nula."
+
+Um delegado expõe um método Invoke para
+invocar os métodos ligados ao delegado. o
+O comportamento do código é o mesmo porém o código fica mais curto e 
+mais claro.
+
+**Cancelar inscrição de um delegado**
+
+Como aprendemos, o operador += foi sobrecarregado
+para permitir que métodos se liguem a eventos.
+
+Mas e se quisermos desassociar o método? Podemos "cancelar a inscriçaõ"
+de um delegado facilmente, utilizando o operador `-=`.
+
+Isso desvincula um dos métodos, mantendo o outro que já estava associado.
 
 ```csharp
 static void Main (string [] args)
@@ -218,31 +296,30 @@ Chamando campainha.Tocar()
 A campainha tocou.
 ```
 
-Se o mesmo assinante for adicionado mais de uma vez para
-o mesmo editor, ele será chamado de um correspondente
-número de vezes Quando o evento ocorre.
+Isso significa que um método pode ser associado e desvinculado, e associado
+novament mais tarde, assim como desejarmos.
 
-Usando eventos
+**Usando eventos**
 
 O objeto de braço Al que criamos não é
-particularmente seguro. O delegado do OnAlarmRais-ed
+particularmente seguro. O delegado do OnCampainhaTocou
 foi tornada pública para que os assinantes possam
 conecte-se a ele. No entanto, isso significa que o código externo
-para o objeto Alarme pode disparar o alarme diretamente
-chamando o delegado OnAlarmRaised. Código externo
-pode sobrescrever o valor de OnAlarmRai sed,
+para o objeto Campainha pode tocar a campainha diretamente
+chamando o delegado OnCampainhaTocou. Código externo
+pode sobrescrever o valor de OnCampainhaTocou,
 potencialmente removendo assinantes.
 
 C # fornece uma construção de evento que permite uma
 delegado a ser especificado como um evento. Isso é mostrado em
 Listagem 1-67. O evento da palavra-chave é adicionado antes do
 definição do delegado. O membro
-OnAlarmRaised agora é criado como um campo de dados no
-Classe de alarme, em vez de uma propriedade.
-OnAlarmRaised não tem mais get ou set
+OnCampainhaTocou agora é criado como um campo de dados no
+Classe de Campainha, em vez de uma propriedade.
+OnCampainhaTocou não tem mais get ou set
 comportamentos. No entanto, agora não é possível para o código
-externo à classe Alarm para atribuir valores a
-OnAl armRai sed, e o OnAl armRa i sed delegate
+externo à classe Campainha para atribuir valores a
+OnAl armRai sed, e o OnCampainhaTocou delegate
 só pode ser chamado de dentro da classe Onde é
 declarado. Em outras palavras, adicionando a palavra-chave do evento
 transforma um delegado em um evento adequadamente útil.
@@ -261,10 +338,9 @@ class Campainha
 O código na listagem 1-67 acima tem outro
 melhoria em relação às versões anteriores. Cria uma
 delegar instância e atribui quando
-OnAlarmRaised é criado, então agora não há necessidade
+OnCampainhaTocou é criado, então agora não há necessidade
 verificar se o delegado tem ou não um valor
-antes de chamá-lo. Isso simplifica o RaiseAlarm
-método.
+antes de chamá-lo. Isso simplifica o método Tocou.
 
 Criar eventos com tipos de delegação internos
 Os delegados do evento criados até agora usaram o
@@ -277,8 +353,8 @@ um evento. EventHandler é usado em todo o
 .NET framework para gerenciar eventos. A
 EventE-Iandler pode fornecer dados, ou pode apenas sinalizar
 que um evento ocorreu. Listagem 1—68 mostra como
-a classe Alarm pode usar um EventI-Iandler para
-indicam que um alarme foi disparado.
+a classe Campainha pode usar um EventI-Iandler para
+indicam que uma campainha foi tocada.
 
 ```csharp
 class Campainha
@@ -301,8 +377,7 @@ para EventArgs. Vazio, para indicar que esse evento
 não produz nenhum dado, é simplesmente uma notificação
 que um evento ocorreu.
 A assinatura dos métodos a serem adicionados a este
-delegado deve refletir isso. O AlarmListenerl
-método aceita dois parâmetros e pode ser usado com
+delegado deve refletir isso. O método CampainhaTocou1 aceita dois parâmetros e pode ser usado com
 este delegado.
 
 ```csharp
@@ -319,22 +394,22 @@ static void CampainhaTocou2(object sender, EventArgs e)
 
 Use EventArgs para entregar informações sobre eventos
 
-A classe Alarm criada na Listagem 1—68 permite um
-assinante para receber uma notificação de que um alarme
+A classe Campainha criada na Listagem 1—68 permite um
+assinante para receber uma notificação de que uma campainha
 foi criado, mas não fornece ao assinante
-qualquer descrição do alarme. É útil se os assinantes
-pode receber informações sobre o alarme. Talvez um
-string descrevendo a localização do alarme seria
+qualquer descrição da campainha. É útil se os assinantes
+pode receber informações sobre a campainha. Talvez um
+string descrevendo a localização da campainha seria
 útil.
 
 Você pode fazer isso criando uma classe que possa entregar
 esta informação e, em seguida, use um EventHandler para
-entregue Isso. Listagem 1—69 mostra o AlarmEventArgs
+entregue Isso. Listagem 1—69 mostra o CampainhaEventArgs
 class, que é uma subclasse da classe Eve ntArgs,
 e adiciona uma propriedade Location a ele. Se mais evento
-informação é necessária, talvez a data e hora de
-alarme, estes podem ser adicionados ao
-Classe AlarmEventArgs.
+informação é necessária, talvez a data e hora da
+campainha, estes podem ser adicionados ao
+Classe CampainhaEventArgs.
 
 ```csharp
 class CampainhaEventArgs : EventArgs
@@ -348,20 +423,20 @@ class CampainhaEventArgs : EventArgs
 ```
 
 Agora você tem seu próprio tipo que pode ser usado para
-descreve um evento que ocorreu. O evento é o
-alarme sendo gerado, e o tipo que você criou é
-chamado AlarmEventAgs. Quando o alarme é levantado nós
-deseja que o manipulador do evento de alarme aceite
-Objetos AlarmEventArgs para que o manipulador possa ser
+descreve um evento que ocorreu. O evento é a
+campainha sendo tocada, e o tipo que você criou é
+chamado CampainhaEventAgs. Quando a campainha é levantado nós
+deseja que o manipulador do evento de campainha aceite
+Objetos CampainhaEventArgs para que o manipulador possa ser
 detalhes do evento.
 
 O delegado EventHandler para o
-Evento OnAlarmRai sed é declarado para entregar
-argumentos do tipo AlarmEventArgs. 'Quando o
-alarme é gerado pelo método Rai seAlarm o evento
-é dada uma referência ao alarme e um recém-criado
-instância de AlarmEventArgs que descreve o
-evento de alarme.
+Evento OnCampainhaTocou é declarado para entregar
+argumentos do tipo CampainhaEventArgs. 'Quando a
+campainha é tocada pelo método Tocou o evento
+é dada uma referência à campainha e um recém-criado
+instância de CampainhaEventArgs que descreve o
+evento de campainha.
 
 ```csharp
 class Campainha
@@ -375,9 +450,9 @@ class Campainha
 ```
 
 Assinantes do evento aceitam o
-AlarmEventArgs e pode usar os dados nele. o
-método AlarmLi stenerl abaixo exibe o
-localização do alarme que obtém de sua
+CampainhaEventArgs e pode usar os dados nele. o
+método CampainhaTocou1 abaixo exibe o
+localização da campainha que obtém de sua
 argumento.
 
 ```csharp
@@ -388,8 +463,8 @@ static void CampainhaTocou1(object sender, CampainhaEventArgs e)
 ```
 
 Note que uma referência ao mesmo
-O objeto AlarmEventArgs é passado para cada um dos
-assinantes do evento OnAlarmRaised. este
+O objeto CampainhaEventArgs é passado para cada um dos
+assinantes do evento OnCampainhaTocou. este
 significa que se um dos assinantes modifica o
 conteúdo da descrição do evento, subseqüente
 Assinantes Verá o evento modificado. Isso pode ser
@@ -406,10 +481,10 @@ uma referência a um pedaço de código C # que o assinante
 quer correr Quando o evento ocorre. Este pedaço de
 O código é chamado de manipulador de eventos.
 
-Nos nossos programas de exemplo, o evento é um alarme
-sendo desencadeada. Quando o alarme é acionado, o evento
+Nos nossos programas de exemplo, o evento é uma campainha
+sendo acionada. Quando a campainha é tocada, o evento
 chamará todos os manipuladores de eventos que se inscreveram
-o evento de alarme. Mas o que acontece se um dos eventos
+o evento de campainha. Mas o que acontece se um dos eventos
 manipuladores falhar, lançando uma exceção? Se o código em
 um dos assinantes lança uma exceção não identificada
 o processo de tratamento de exceção termina nesse ponto e
