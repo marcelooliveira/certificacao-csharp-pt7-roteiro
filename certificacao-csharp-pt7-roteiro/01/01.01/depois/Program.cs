@@ -17,6 +17,8 @@ namespace _01_01
         static void Main(string[] args)
         {
             Campainha campainha = new Campainha();
+            //campainha.Tocar();
+            //campainha.OnCampainhaTocou = new Action(() => { });
             campainha.OnCampainhaTocou += CampainhaTocou1;
             campainha.OnCampainhaTocou += CampainhaTocou2;
 

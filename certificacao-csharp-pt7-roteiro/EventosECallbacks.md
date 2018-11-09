@@ -301,28 +301,41 @@ novament mais tarde, assim como desejarmos.
 
 **Usando eventos**
 
-O objeto de braço Al que criamos não é
-particularmente seguro. O delegado do OnCampainhaTocou
-foi tornada pública para que os assinantes possam
-conecte-se a ele. No entanto, isso significa que o código externo
-para o objeto Campainha pode tocar a campainha diretamente
-chamando o delegado OnCampainhaTocou. Código externo
-pode sobrescrever o valor de OnCampainhaTocou,
-potencialmente removendo assinantes.
+Vamos dar uma olhada na propriedade *OnCampainhaTocou*:
 
-C # fornece uma construção de evento que permite uma
-delegado a ser especificado como um evento. Isso é mostrado em
-Listagem 1-67. O evento da palavra-chave é adicionado antes do
-definição do delegado. O membro
-OnCampainhaTocou agora é criado como um campo de dados no
-Classe de Campainha, em vez de uma propriedade.
-OnCampainhaTocou não tem mais get ou set
-comportamentos. No entanto, agora não é possível para o código
-externo à classe Campainha para atribuir valores a
-OnAl armRai sed, e o OnCampainhaTocou delegate
-só pode ser chamado de dentro da classe Onde é
-declarado. Em outras palavras, adicionando a palavra-chave do evento
-transforma um delegado em um evento adequadamente útil.
+```csharp
+class Campainha
+{
+    public Action OnCampainhaTocou { get; set; }
+    ...
+}
+```
+
+Qual o problema com essa propriedade? Uma falha de **segurança**.
+
+Como o delegado do OnCampainhaTocou é **público**, para que 
+os assinantes possam se conectar a ele. Porém, isso significa 
+que o código externo para o objeto Campainha pode tocar a campainha 
+**diretamente**, chamando o delegado OnCampainhaTocou, por exemplo:
+
+```csharp
+Campainha campainha = new Campainha();
+campainha.Tocar();
+```
+
+Isso não é desejável.
+
+Além disso, algum código externo pode **sobrescrever** o valor de OnCampainhaTocou,
+potencialmente removendo assinantes da action:
+
+```csharp
+campainha.OnCampainhaTocou = new Action(() => { });
+```
+
+E issso não é desejável.
+
+C# fornece uma construção de evento que permite uma
+delegado a ser especificado como um **evento**. 
 
 ```csharp
 class Campainha
@@ -335,26 +348,54 @@ class Campainha
 }
 ```
 
-O código na listagem 1-67 acima tem outro
-melhoria em relação às versões anteriores. Cria uma
-delegar instância e atribui quando
-OnCampainhaTocou é criado, então agora não há necessidade
-verificar se o delegado tem ou não um valor
-antes de chamá-lo. Isso simplifica o método Tocou.
+A palavra-chave **evento** tem que ser adicionada **antes** do
+definição do delegado.
 
-Criar eventos com tipos de delegação internos
-Os delegados do evento criados até agora usaram o
-Classe de ação como o tipo de cada evento. Isso vai
-trabalho, mas programas que usam eventos devem usar o
-EventHandler Class em vez de Action. Isto é
-porque a classe EventHandler é a parte do .NET
+> public **event** Action OnCampainhaTocou = **delegate { };**
+
+O membro `OnCampainhaTocou` agora é criado como um **campo** na
+classe `Campainha`, em vez de uma propriedade.
+
+Note que agora OnCampainhaTocou não tem mais os comportamentos get ou set.
+
+Isso permiter **ocultar** esse evento **contra um acesso direto** de fora da classe Campainha.
+Agora não é possível para o código
+externo à classe Campainha atribuir valores a
+OnCampainhaTocou. Esse delegate só pode ser chamado de dentro da classe
+onde é declarado. Em outras palavras, adicionando a palavra-chave do evento
+transforma um **delegado** em um **evento**.
+
+**Criar eventos com tipos de delegação internos**
+
+A próxima alteração exige a troca do tipo Action pelo tipo EventHandler:
+
+```csharp
+public event EventHandler OnCampainhaTocou = delegate { };
+```
+
+Programas que trabalham com eventos devem usar o
+EventHandler Class em vez de Action.
+
+Isto ocorre porque a classe EventHandler é a parte do .NET
 projetado para permitir que os assinantes recebam dados sobre
 um evento. EventHandler é usado em todo o
-.NET framework para gerenciar eventos. A
-EventE-Iandler pode fornecer dados, ou pode apenas sinalizar
-que um evento ocorreu. Listagem 1—68 mostra como
-a classe Campainha pode usar um EventI-Iandler para
-indicam que uma campainha foi tocada.
+.NET framework para gerenciar eventos, e serve para fornecer dados, ou sinalizar
+que um evento ocorreu. 
+
+Agora vamos chamar o evento OnCampainhaTocou dentro do método Tocar(), mas de outra forma:
+
+```csharp
+public void Tocar()
+{
+    OnCampainhaTocou(this, EventArgs.Empty);
+}
+```
+
+Como o evento OnCampainhaTocou já foi inicializado, agora não há 
+necessidade de verificar se o delegado tem ou não um valor
+antes de chamá-lo. Isso simplifica o método `Tocar()`.
+
+Neste ponto, nossa classe Campainha possui o seguinte código:
 
 ```csharp
 class Campainha
