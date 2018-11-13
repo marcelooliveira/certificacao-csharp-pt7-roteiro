@@ -11,12 +11,12 @@ esta seção, e as instruções LINQ podem ser um pouco
 difícil de entender no começo. No entanto, lembre-se que
 você pode baixar e executar todo o código de exemplo.
 
-Aplicação de exemplo
+**Aplicação de exemplo**
 
 A fim de fornecer um bom contexto para a exploração
 de LINQ vamos desenvolver os Filmes
 aplicativo usado anteriormente neste livro. Esta aplicação
-permite o armazenamento de dados de faixa de música. Figura 4–15
+permite o armazenamento de dados de filme. FIGURA
 mostra as classes no sistema. Note que no
 momento em que não estamos usando um banco de dados para armazenar a classe
 em formação. Mais tarde, vamos considerar como mapear isso
@@ -25,14 +25,14 @@ projeto em um banco de dados.
 Nas versões anteriores do aplicativo, o
 A classe Filme continha uma string que dava
 nome do diretor que gravou a faixa. No novo
-design, uma faixa de música contém uma referência a um
+design, uma filme contém uma referência a um
 Objeto do diretor que descreve o diretor que registrou o
-faixa. A Figura 4–15 mostra como isso funciona. Se um diretor
+faixa. A FIGURA mostra como isso funciona. Se um diretor
 registra mais de uma faixa (o que é muito provável), a
 detalhes do diretor só serão armazenados uma vez e referidos por
 muitas instâncias do Music Track.
 
-FIGURA 4-15 Projeto de classe de trilhas de música
+**FIGURA Projeto de classe de filmes**
 
 O código a seguir mostra o código C # para as classes.
 
@@ -62,9 +62,9 @@ os dados de teste podem fornecer informações úteis sobre sua turma
 desenhar.
 
 LISTAGEM mostra código que cria alguns diretores
-e faixas. Você pode aumentar a quantidade de dados de teste
+e filmes. Você pode aumentar a quantidade de dados de teste
 adicionando mais diretores e títulos. Nesta versão todos
-os diretores gravaram todas as faixas. Aleatório
+os diretores gravaram todas as filmes. Aleatório
 gerador de números fornece cada faixa aleatória
 comprimento no intervalo de 20 a 600 segundos. Observe que
 porque o gerador de números aleatórios tem um fixo
@@ -147,7 +147,7 @@ Use um operador LINQ
 Agora que você tem alguns dados pode usar operadores LINQ
 para construir consultas e extrair resultados dos dados. o
 código na LISTAGEM imprime os títulos de todos os
-faixas que foram gravadas pelo diretor com o nome
+filmes que foram gravadas pelo diretor com o nome
 "Tim Burton". A primeira declaração usa uma consulta LINQ para
 criar uma coleção enumerável de Filme
 
@@ -232,7 +232,7 @@ select filme;
 
 
 Para escrever esta declaração, você deve descobrir o tipo
-de dados na coleção de faixas de música e, em seguida, use
+de dados na coleção de filmes e, em seguida, use
 esse tipo com IEnumerable. A palavra-chave var
 torna este código muito mais fácil de escrever (veja a LISTAGEM
 32).
@@ -396,7 +396,7 @@ Junção LINQ
 
 O design de classe usado até este ponto usa c #
 referências para implementar as associações entre os
-objetos no sistema. Em outras palavras, uma faixa de música
+objetos no sistema. Em outras palavras, uma filme
 objeto contém uma referência ao objeto Artist que
 representa o diretor que gravou aquela faixa. Se vocês
 armazenar seus dados em um banco de dados, no entanto, você não será
@@ -407,14 +407,14 @@ ID exclusivo (sua chave primária) e objetos referentes a
 esse objeto conterá esse valor de ID (uma chave estrangeira).
 Em vez de uma referência a uma instância do diretor, o
 O Filme agora contém um campo ArtistID que
-identifica o diretor associado a essa faixa. Figura
-4—16 mostra como esta associação é implementada.
+identifica o diretor associado a essa faixa. FIGURA
+mostra como esta associação é implementada.
 
 olD: In!
 3:53:25
 Names‘rmn
 
-FIGURA 4-16 Faixas de Música e Identificação do diretor
+FIGURA filmes e Identificação do diretor
 
 Esse design dificulta um pouco a pesquisa
 para faixas de um diretor em particular. O programa precisa
@@ -427,7 +427,7 @@ consulta para a entrada de outro.
 A LISTAGEM mostra como isso funciona. A primeira consulta
 seleciona o diretor Com o nome "Tim Burton". Os resultados
 dessa consulta são unidos à segunda consulta
-que pesquisa a coleção de faixas de música para faixas
+que pesquisa a coleção de filmes para faixas
 Com uma propriedade stid Arti que corresponda à do
 diretor encontrado pela primeira quely.
 
@@ -464,13 +464,13 @@ coleção.
 A LISTAGEM mostra como fazer isso. O grupo
 ação é dado o item de dados para agrupar por e o
 propriedade por que é para ser agrupado. o
-O resumo da trilha do diretor contém uma entrada para cada
+O resumo da filme do diretor contém uma entrada para cada
 diretor diferente. Cada um dos itens no resumo tem
 uma propriedade Key, que é o valor que o item é
 "Agrupados" ao redor. Você quer criar um grupo ao redor
 diretores, então a chave é o valor do ID do diretor de cada
 faixa. A propriedade Key do
-O resumo da trilha do diretor fornece o valor dessa chave.
+O resumo da filme do diretor fornece o valor dessa chave.
 Você pode usar comportamentos fornecidos por um objeto de resumo
 para descobrir o conteúdo do resumo e
 o método Count retorna o número de itens no
@@ -626,7 +626,7 @@ operadores sobre os resultados produzidos por
 operações. Você já usou um agregado
 operador em uma consulta LINQ. Você usou o Conde
 
-operador na LISTAGEM para contar o número de trilhas
+operador na LISTAGEM para contar o número de filmes
 em um grupo extraído pelo diretor. Isso forneceu a
 número de faixas atribuídas a um determinado diretor. Você
 pode querer obter o comprimento total de todas as faixas
@@ -704,7 +704,7 @@ A instrução de consulta usa a compreensão de consulta
 sintaxe, que inclui os operadores de, em,
 onde e selecione. O compilador usa isso para
 gerar uma chamada para o método Where no
-Coleção de faixas de música. Em outras palavras, o código
+Coleção de filmes. Em outras palavras, o código
 que é realmente criado para realizar a consulta é o
 declaração abaixo:
 
@@ -722,7 +722,7 @@ Imprimir(filmesSelecionados);
 
 O método Where aceita uma expressão lambda como
 um parâmetro. Neste caso, a expressão lambda
-aceita uma faixa de música como um parâmetro e retorna
+aceita uma filme como um parâmetro e retorna
 Verdadeiro se a propriedade Name do elemento Artist em
 o Mus i cTrack corresponde ao nome que está sendo
 selecionado.
@@ -924,7 +924,7 @@ do diretor Track Result.
 
 [IMAGEM]
 
-FIGURA 4-17 Resultados imediatos da consulta
+FIGURA Resultados imediatos da consulta
 
 Um resultado da consulta também fornece ToList e
 ToDictionary métodos que forçará a execução de
@@ -1095,7 +1095,7 @@ Modificar dados com o LINQ para XML
 A classe XElement fornece métodos que podem ser
 usado para modificar o conteúdo de um determinado elemento XML.
 O programa na LISTAGEM cria um que
-identifica todos os itens da faixa de música que têm
+identifica todos os itens da filme que têm
 título "meu caminho" e, em seguida, usa o ReplaceWith
 método sobre os dados do título no elemento para mudar o
 título para o título correto, que é "meu caminho".
