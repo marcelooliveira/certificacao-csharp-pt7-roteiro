@@ -32,6 +32,14 @@ namespace _01_03
 
             filmes.Add(novoFilme);
 
+
+            //IEnumerable<Filme> filmesSelecionados = filmes;
+            //Imprimir(filmesSelecionados);
+
+            //IEnumerable<Filme> filmesSelecionados
+            //    = from f in filmes select f;
+            //Imprimir(filmesSelecionados);
+
             IEnumerable<Filme> filmesSelecionados
                 = from filme in filmes
                   where filme.Diretor.Nome == "Tim Burton"

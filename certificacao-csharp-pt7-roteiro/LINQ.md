@@ -119,14 +119,27 @@ private static void Imprimir(List<Filme> filmes)
 Se você olhar o código na LISTAGEM, verá que
 estamos usando a sintaxe do inicializador de objetos para criar novos
 instâncias dos objetos de filme e inicializar seus
-valores ao mesmo tempo. Esta é uma Cié muito útil
-recurso que permite inicializar objetos quando eles
+valores ao mesmo tempo:
+
+```csharp
+new Filme {
+    DiretorId = 1,
+    Diretor = new Diretor { Nome = "Quentin Tarantino" },
+    Titulo = "Pulp Fiction",
+    Ano = 1994,
+    Minutos = 2 * 60 + 34
+}
+```
+
+Este é um recurso muito útil
+que permite inicializar objetos quando eles
 são criados sem a necessidade de criar um construtor
-método na classe que está sendo inicializada.
+na classe que está sendo inicializada.
+
 O código a seguir mostra como funciona. A declaração
 cria e inicializa uma nova instância do Filme.
-Observe o uso de chaves ({e}) para delimitar os itens
-que inicializam a instância e COMmas para separar
+Observe o uso de chaves ( { e } ) para delimitar os itens
+que inicializam a instância e vírgulas para separar
 cada valor sendo usado para inicializar o objeto.
 
 ```csharp
@@ -136,26 +149,81 @@ Filme novoFilme = new Filme
     Titulo = "A Fantástica Fábrica de Chocolate",
     Ano = 2005
 };
+filmes.Add(novoFilme);
 ```
 
 Você não precisa inicializar todos os elementos do
-instância; quaisquer propriedades não inicializadas são definidas como suas
-valores padrão (zero para um valor numérico e nulo para um
-corda). As propriedades a serem inicializadas dessa maneira
-todos devem ser membros públicos da classe.
+instância: quaisquer propriedades não inicializadas são definidas com seus
+valores-padrão (zero para um valor numérico e nulo para strings).
 
-**Use um operador LINQ**
+(Todas as propriedades a serem inicializadas dessa maneira
+devem ser membros públicos da classe)
 
-Agora que você tem alguns dados pode usar operadores LINQ
-para construir consultas e extrair resultados dos dados. o
-código na LISTAGEM imprime os títulos de todos os
-filmes que foram gravadas pelo diretor com o nome
-"Tim Burton". A primeira declaração usa uma consulta LINQ para
-criar uma coleção enumerável de Filme
+**Usando um operador LINQ**
 
-referências chamadas filmesSelecionados que é então
-enumerado pelo f o chegar a construção para imprimir
-os resultados.
+Agora que você tem alguns dados, pode começar a usar operadores LINQ
+para construir consultas e extrair resultados desses dados.
+
+Vamos declarar uma variável `filmesSelecionados` para armazenar nossa consulta.
+Inicialmente, a consulta contém TODOS os elementos da lista de filmes:
+
+```csharp
+IEnumerable<Filme> filmesSelecionados = filmes;
+Imprimir(filmesSelecionados);
+```
+
+Como resultado, temos:
+
+![File5](file5.png)
+
+Agora faremos uma pequena alteração: em vez de pegar o resultado diretamente da lista
+de filmes, vamos **criar uma consulta** sobre essa lista de filmes. Como seria
+essa consulta, se você estivesse trabalhando com SQL Server?
+
+```
+SELECT f.*
+FROM filmes AS f
+WHERE NomeDiretor = 'Tim Burton'
+```
+
+Onde:
+
+- A cláusula SELECT define a "PROJEÇÃO", isto é, quais colunas devem ser retornadas no resultado
+- A cláusula FROM define a origem dos dados
+- A letra "f" representa o ALIAS para a tabela de filmes
+- A cláusula WHERE filtra os dados
+
+As consultas LINQ usam uma sintaxe parecida:
+
+```csharp
+IEnumerable<Filme> filmesSelecionados
+    = select f from filmes as f;
+```
+
+Porém, uma consulta LINQ sempre deve começar pela cláusula FROM:
+
+```csharp
+IEnumerable<Filme> filmesSelecionados
+    = from filmes as f select f;
+```
+
+Além disso, o ALIAS da tabela de filmes tem a sintaxe "[alias] in [dados]":
+
+```csharp
+IEnumerable<Filme> filmesSelecionados
+    = from f in filmes select f;
+Imprimir(filmesSelecionados);
+```
+
+Rodando a aplicação, teremos o mesmo resultado.
+
+O próximo passo é filtrar pelo nome do diretor do filme.
+
+Podemos acessar as propriedades de um filme através do seu alias,
+que funciona como uma variável temporária dentro da consulta.
+
+Vamos introduzir a cláusula `where` para filtrar pelos filmes de um
+diretor:
 
 ```csharp
 IEnumerable<Filme> filmesSelecionados
@@ -166,63 +234,34 @@ IEnumerable<Filme> filmesSelecionados
 Imprimir(filmesSelecionados);
 ```
 
-![File4](file4.png)
+Rodando a aplicação, temos agora o resultado filtrado:
 
-A consulta LINQ retorna um resultado IEnumerable
-que é enumerado por uma construção foreach. Você
-pode encontrar uma explicação de IEnumerable na Skill 2.4
-na seção "IEnumerable". O “Create method-
-com base em consultas LINQ ”tem mais detalhes sobre como
-consulta é realmente implementada pelo código C #.
-Use a palavra-chave var com o LINQ
-A linguagem C # é "estaticamente digitada". O tipo de
+![File6](file6.png)
+
+O código na LISTAGEM imprime os títulos de todos os
+filmes que foram gravadas pelo diretor com o nome
+"Tim Burton". A primeira declaração usa uma consulta LINQ para
+criar uma coleção enumerável de Filme.
+
+A consulta LINQ retornou um resultado IEnumerable, e por isso 
+ele pode ser enumerado por uma construção foreach.
+
+**Usando a palavra-chave var para tipos implícitos com o LINQ**
+
+A linguagem C# é "estaticamente tipada". Por isso, o tipo de
 objetos em um programa é determinado em tempo de compilação
-e o compilador rejeita quaisquer ações que não são válidas.
-Por exemplo, o código a seguir falha ao compilar
-porque o compilador “não permite que uma string seja
-subtraído de um número.
+e o compilador rejeita quaisquer ações que não forem válidas.
 
-```csharp
-string nome = "Steven Spielberg";
-int ano = 1984;
-int teste = ano - nome;
-```
-
-Isso proporciona mais confiança de que nossos programas são
-correto antes que eles corram. A desvantagem é que você tem
-para colocar no esforço de dar a cada variável um tipo quando
-você declara isso. Na maior parte do tempo, entretanto,
-compilador pode inferir o tipo a ser usado para qualquer dado
-variável. A variável de nome no exemplo anterior
-deve ser do tipo string, já que uma string está sendo
-atribuído a ele. Pela mesma lógica, a variável idade
-deve ser um int.
-
-Você pode simplificar o código usando a palavra-chave var para
-diga ao compilador para inferir o tipo da variável sendo
+Na consulta, declaramos a variável como `IEnumerable<Filme>`,
+mas você pode simplificar o código usando a palavra-chave `var` para
+dizer ao compilador para inferir o tipo da variável sendo
 criado a partir do contexto em que a variável é usada.
-O compilador irá definir uma variável de string chamada
-nameVar em resposta à seguinte declaração:
 
-```csharp
-var nomeVar = "Steven Spielberg";
-```
-
-Note que isto não significa que o compilador
-não pode detectar erros de compilação. As declarações em
-LISTAGEM ainda não compila:
-
-```csharp
-var nomeVar = "Steven Spielberg";
-var anoVar = 1984;
-var testeVar = ano - nome;
-```
-
-A palavra-chave var é especialmente útil ao usar
+A palavra-chave var é especialmente útil quando trabalhamos com
 LINQ. O resultado de uma consulta LINQ simples é um
 coleção enumerável do tipo de elemento de dados mantido
-na fonte de dados. A declaração a seguir mostra o
-consulta da LISTAGEM.
+na fonte de dados. A declaração a seguir mostra nossa
+consulta atual.
 
 
 ```csharp
@@ -233,11 +272,11 @@ select filme;
 ```
 
 
-Para escrever esta declaração, você deve descobrir o tipo
-de dados na coleção de filmes e, em seguida, use
-esse tipo com IEnumerable. A palavra-chave var
-torna este código muito mais fácil de escrever (veja a LISTAGEM
-32).
+Para escrever esta declaração, você deve primeiro descobrir o tipo
+de dados na coleção de filmes e, em seguida, usar
+esse tipo com `IEnumerable<Filme>`.
+
+A palavra-chave var torna este código mais fácil de escrever:
 
 ```csharp
 var selecionados =
@@ -245,44 +284,14 @@ from filme in filmes
 where filme.Diretor.Nome == "Tim Burton"
 select filme;
 ```
-
-
-Existem algumas situações onde você não sabe
-o tipo de uma variável Ao escrever o código. Mais tarde
-esta seção você vai descobrir objetos que são criados
-dinamicamente como o programa é executado e não tem nenhum tipo de
-todos. Estes são chamados de tipos anônimos. O único jeito
-código pode se referir a estes é pelo uso de variáveis do tipo
-var.
-
-Você pode usar o tipo var em todo o seu código
-Se você gosta, mas por favor tenha cuidado. Uma declaração como
-o seguinte não vai fazer você muito popular com
-colegas programadores porque é impossível para eles
-inferir o tipo de variável v Sem cavar no
-código e descobrir que tipo é retornado pelo
-Método de anúncio DoRe.
-
-var v = DoRead();
-
-Se você realmente quer usar var nessas situações, você
-deve certificar-se de que você seleciona nomes de variáveis que
-são adequadamente informativos, ou você pode inferir o tipo de
-o item do código, como no seguinte
-afirmações.
-
-
-var nextPerson = DoReadPerson();
-var newPerson = new Person();
-
 **Projeção LINQ**
 
 Você pode usar a operação de seleção no LINQ para
 produzir uma versão filtrada de uma fonte de dados. Em
-exemplos anteriores você descobriu todas as faixas
+exemplos anteriores você descobriu todas os filmes
 gravado por um diretor em particular. Você pode criar outro
-critérios de pesquisa, por exemplo, selecionando as faixas
-com um certo título, ou faixas mais longas que um certo
+critérios de pesquisa, por exemplo, selecionando os filmes
+com um certo título, ou filmes mais longas que um certo
 comprimento.
 
 O resultado de um select é uma coleção de referências
@@ -299,7 +308,7 @@ criado apenas para conter os dados retornados pela consulta.
 
 Vamos começar criando a classe chamada FilmeResumido
 que vai conter apenas o nome do diretor e o título de um
-faixa. Você vai usar isso para segurar o resultado da pesquisa
+filme. Você vai usar isso para segurar o resultado da pesquisa
 inquerir.
 
 
@@ -356,8 +365,8 @@ select new // tipo anônimo: tipo da projeção não é necessário
 A consulta na LISTAGEM cria novas instâncias de
 um tipo anônimo que contém apenas os itens de dados
 caso a primeira propriedade no tipo é o nome do
-diretor que grava a faixa, e o segundo é o título de
-a faixa. Para a primeira propriedade você realmente fornece
+diretor que dirigiu o filme, e o segundo é o título de
+o filme. Para a primeira propriedade você realmente fornece
 o nome do campo a ser criado no novo tipo.
 Para a segunda propriedade, a propriedade é criada com
 mesmo nome que a propriedade de origem, neste caso o
@@ -369,7 +378,7 @@ sem nome É um tipo anônimo. Isso significa que você
 tem que usar uma referência var para se referir à consulta
 resultado. Você pode percorrer a coleção neste
 resultado como você faria com qualquer outro. Note que cada item
-a coleção de faixas selecionada deve ser de 110W
+a coleção de filmes selecionada deve ser de 110W
 referido usando var porque seu tipo não tem nome.
 O código a seguir mostra como var é usado para cada item
 
@@ -398,7 +407,7 @@ O design de classe usado até este ponto usa c #
 referências para implementar as associações entre os
 objetos no sistema. Em outras palavras, uma filme
 objeto contém uma referência ao objeto Diretor que
-representa o diretor que gravou aquela faixa. Se vocês
+representa o diretor que gravou aquele filme. Se vocês
 armazenar seus dados em um banco de dados, no entanto, você não será
 capaz de armazenar as associações dessa maneira.
 
@@ -407,7 +416,7 @@ ID exclusivo (sua chave primária) e objetos referentes a
 esse objeto conterá esse valor de ID (uma chave estrangeira).
 Em vez de uma referência a uma instância do diretor, o
 O Filme agora contém um campo DiretorId que
-identifica o diretor associado a essa faixa. FIGURA
+identifica o diretor associado a esse filme. FIGURA
 mostra como esta associação é implementada.
 
 olD: In!
@@ -417,9 +426,9 @@ Names‘rmn
 **FIGURA filmes e Identificação do diretor**
 
 Esse design dificulta um pouco a pesquisa
-para faixas de um diretor em particular. O programa precisa
+para filmes de um diretor em particular. O programa precisa
 encontre o valor do ID para o diretor com o nome sendo
-procurou e, em seguida, procure por todas as faixas com isso
+procurou e, em seguida, procure por todos os filmes com isso
 valor do id do diretor. Felizmente, o LINQ fornece uma junção
 operador que pode ser usado para juntar a saída de um LINQ
 consulta para a entrada de outro.
@@ -427,7 +436,7 @@ consulta para a entrada de outro.
 A LISTAGEM mostra como isso funciona. A primeira consulta
 seleciona o diretor Com o nome "Tim Burton". Os resultados
 dessa consulta são unidos à segunda consulta
-que pesquisa a coleção de filmes para faixas
+que pesquisa a coleção de filmes para filmes
 Com uma propriedade stid Arti que corresponda à do
 diretor encontrado pela primeira quely.
 
@@ -459,7 +468,7 @@ Outro recurso útil do LINQ é a capacidade de agrupar
 
 resultados de uma consulta para criar uma saída de resumo. Para
 Por exemplo, você pode querer criar uma consulta para saber como
-muitas faixas existem por cada diretor na filme
+muitos filmes existem por cada diretor na filme
 coleção.
 A LISTAGEM mostra como fazer isso. O grupo
 ação é dado o item de dados para agrupar por e o
@@ -469,7 +478,7 @@ diretor diferente. Cada um dos itens no resumo tem
 uma propriedade Key, que é o valor que o item é
 "Agrupados" ao redor. Você quer criar um grupo ao redor
 diretores, então a chave é o valor do ID do diretor de cada
-faixa. A propriedade Key do
+filme. A propriedade Key do
 O resumo da filme do diretor fornece o valor dessa chave.
 Você pode usar comportamentos fornecidos por um objeto de resumo
 para descobrir o conteúdo do resumo e
@@ -628,8 +637,8 @@ operador em uma consulta LINQ. Você usou o Conde
 
 operador na LISTAGEM para contar o número de filmes
 em um grupo extraído pelo diretor. Isso forneceu a
-número de faixas atribuídas a um determinado diretor. Você
-pode querer obter o comprimento total de todas as faixas
+número de filmes atribuídas a um determinado diretor. Você
+pode querer obter o comprimento total de todas os filmes
 atribuído a um diretor, e para isso você pode usar a Soma
 operador agregado.
 O parâmetro para o operador Sum é um lambda
@@ -668,7 +677,7 @@ Console.WriteLine();
 
 O resultado dessa consulta é uma coleção de
 Objetos anônimos que contêm o nome do diretor
-e o comprimento total de todas as faixas gravadas por esse
+e o comprimento total de todas os filmes dirigidos por esse
 diretor. O programa produz a seguinte saída:
 
 
@@ -733,7 +742,7 @@ Você viu pela primeira vez expressões lambda na Habilidade 1.4,
 expressão lambda é um pedaço de comportamento que pode ser
 considerado como um objeto. Nesta situação o Onde
 método está recebendo um pedaço de comportamento que o
-método pode usar para determinar quais faixas selecionar.
+método pode usar para determinar quais filmes selecionar.
 
 Neste caso, o comportamento é “pegar uma pista e ver se o
 nome do diretor é Tim Burton. ”Você pode criar o seu próprio
@@ -844,7 +853,7 @@ implementação da consulta da LISTAGEM;
 tipo anônimo é mostrado em negrito. Observe o uso de um
 classe anônima intermediária que é usada para
 implementar a junção entre as duas consultas e
-gerar objetos que contenham diretor e faixa
+gerar objetos que contenham diretor e filme 
 em formação.
 
 **LISTAGEM Tipos anônimos complexos**
