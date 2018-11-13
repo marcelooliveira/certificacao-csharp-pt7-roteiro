@@ -112,7 +112,7 @@ private static List<Filme> GetFilmes()
 
 ![File3](file3.png)
 
-Use um inicializador de objeto
+**Use um inicializador de objeto**
 
 Se você olhar o código na LISTAGEM, verá que
 estamos usando a sintaxe do inicializador de objetos para criar novos
@@ -142,7 +142,7 @@ valores padrão (zero para um valor numérico e nulo para um
 corda). As propriedades a serem inicializadas dessa maneira
 todos devem ser membros públicos da classe.
 
-Use um operador LINQ
+**Use um operador LINQ**
 
 Agora que você tem alguns dados pode usar operadores LINQ
 para construir consultas e extrair resultados dos dados. o
@@ -273,8 +273,7 @@ afirmações.
 var nextPerson = DoReadPerson();
 var newPerson = new Person();
 
-
-Projeção LINQ
+**Projeção LINQ**
 
 Você pode usar a operação de seleção no LINQ para
 produzir uma versão filtrada de uma fonte de dados. Em
@@ -331,7 +330,7 @@ Quando você está usando a vinculação de dados para exibir
 resultados para o usuário. Os valores no resultado da consulta podem ser
 vinculado a itens a serem exibidos.
 
-Tipos anônimos
+**Tipos anônimos**
 
 Você pode remover a necessidade de criar uma classe para manter o
 resultado de uma consulta de pesquisa, fazendo com que a consulta retorne
@@ -372,8 +371,7 @@ a coleção de faixas selecionada deve ser de 110W
 referido usando var porque seu tipo não tem nome.
 O código a seguir mostra como var é usado para cada item
 
-Ao imprimir os resultados da consulta na LISTAGEM
-4—34.
+Ao imprimir os resultados da consulta na LISTAGEM.
 
 
 ```csharp
@@ -392,7 +390,7 @@ por exemplo, se ele tentar obter a propriedade Length
 a partir do resultado do quely, isso gera um erro em
 tempo de compilação.
 
-Junção LINQ
+**Junção LINQ**
 
 O design de classe usado até este ponto usa c #
 referências para implementar as associações entre os
@@ -414,7 +412,7 @@ olD: In!
 3:53:25
 Names‘rmn
 
-FIGURA filmes e Identificação do diretor
+**FIGURA filmes e Identificação do diretor**
 
 Esse design dificulta um pouco a pesquisa
 para faixas de um diretor em particular. O programa precisa
@@ -431,7 +429,7 @@ que pesquisa a coleção de filmes para faixas
 Com uma propriedade stid Arti que corresponda à do
 diretor encontrado pela primeira quely.
 
-LISTAGEM Junção LINQ
+**LISTAGEM Junção LINQ**
 
 
 ```csharp
@@ -453,7 +451,7 @@ foreach (var filme in filmesDeDiretores)
 ```
 
 
-Grupo LINQ
+**Grupo LINQ**
 
 Outro recurso útil do LINQ é a capacidade de agrupar
 
@@ -478,7 +476,7 @@ resumo. Você descobrirá mais resumo
 comandos na discussão sobre o agregado
 comandos mais adiante nesta seção.
 
-LISTAGEM grupo LINQ
+**LISTAGEM grupo LINQ**
 
 
 ```csharp
@@ -515,7 +513,7 @@ gerando o nome do diretor, o programa
 exibe os valores do ID do diretor.
 
 
-[resultado]
+**[resultado]**
 
 
 Você pode consertar isso usando uma operação de junção
@@ -580,7 +578,7 @@ termina Quando a consulta LINQ retorna um vazio
 coleção. O usuário pressiona uma tecla no final de cada
 página para passar para a próxima página.
 
-LISTAGEM LINQ tomar e pular
+**LISTAGEM LINQ tomar e pular**
 
 
 ```csharp
@@ -617,7 +615,7 @@ while (true)
 }
 ```
 
-Comandos Agregados do LINQ
+**Comandos Agregados do LINQ**
 
 No contexto dos comandos LINQ, a palavra
 agregado significa “reunir um certo número de
@@ -640,7 +638,7 @@ comprimentos, a expressão lambda apenas retorna o valor
 da propriedade Length para o item. LISTAGEM
 mostra como isso funciona.
 
-LISTAGEM Agregado LINQ
+**LISTAGEM Agregado LINQ**
 
 
 ```csharp
@@ -740,7 +738,7 @@ consultas baseadas em método em vez de usar o LINQ
 operadores. LISTAGEM mostra a consulta LINQ e o
 comportamento baseado em método correspondente.
 
-LISTAGEM Consulta baseada em método
+**LISTAGEM Consulta baseada em método**
 
 
 ```csharp
@@ -769,8 +767,8 @@ eles são implementados como métodos de extensão. Você pode
 saiba mais sobre métodos de extensão na Habilidade 2.1, em
 a seção “Métodos de extensão”.
 
-Consultar dados usando consulta
-sintaxe de compreensão
+**Consultar dados usando consulta
+sintaxe de compreensão**
 
 A frase “sintaxe de compreensão de consulta” refere-se a
 a maneira que você pode construir consultas LINQ para usar o
@@ -787,8 +785,7 @@ produzir um resumo dando a duração da música por
 cada diretor. Isso usa o operador orderby para pedir
 a saída pelo nome do diretor.
 
-LISTAGEM Consulta completa
-
+**LISTAGEM Consulta completa**
 
 ```csharp
 var resumoDoDiretor =
@@ -847,7 +844,7 @@ implementar a junção entre as duas consultas e
 gerar objetos que contenham diretor e faixa
 em formação.
 
-LISTAGEM Tipos anônimos complexos
+**LISTAGEM Tipos anônimos complexos**
 
 
 ```csharp
@@ -880,7 +877,7 @@ Console.WriteLine();
 ```
 
 
-Forçar execução de uma consulta
+**Forçar execução de uma consulta**
 
 O resultado de uma consulta LINQ é um item que pode ser
 iterado. Nós usamos a construção foreach para
@@ -892,7 +889,7 @@ execução de uma consulta, você pode usar o ToArray ()
 método conforme mostrado na LISTAGEM. A consulta é
 executada e o resultado retornado como uma matriz.
 
-LISTAGEM Forçar execução de consulta
+**LISTAGEM Forçar execução de consulta**
 
 
 ```csharp
@@ -924,7 +921,7 @@ do diretor Track Result.
 
 [IMAGEM]
 
-FIGURA Resultados imediatos da consulta
+**FIGURA Resultados imediatos da consulta**
 
 Um resultado da consulta também fornece ToList e
 ToDictionary métodos que forçará a execução de
@@ -964,7 +961,7 @@ string xmlText =
 "</Filmes>";
 ```
 
-XDocument
+**XDocument**
 
 Na seção anterior, "Consumir dados XML" você
 Aprendi a consumir dados XML em um programa
@@ -997,7 +994,7 @@ Comportamentos XML. O programa usa um foreach
 construção para trabalhar através da coleção de
 Resultados XElement, extraindo os valores de texto necessários.
 
-LISTAGEM: Ler XML com LINQ
+**LISTAGEM: Ler XML com LINQ**
 
 
 ```csharp
@@ -1013,7 +1010,7 @@ foreach (XElement item in filmesSelecionados2)
 ```
 
 
-Filtrar dados XML com o LINQ para XML
+**Filtrar dados XML com o LINQ para XML**
 
 O programa na LISTAGEM exibe todo o
 conteúdo do documento XML. Um programa pode
@@ -1023,7 +1020,7 @@ A LISTAGEM mostra como isso funciona. Note que o
 Onde a operação tem que extrair o valor de dados de
 o elemento para que ele possa realizar a comparação.
 
-LISTAGEM: Filtrar XML com LINQ
+**LISTAGEM: Filtrar XML com LINQ**
 
 ```csharp
 filmesSelecionados2 =
@@ -1064,7 +1061,7 @@ foreach (XElement item in filmesSelecionados2)
 ```
 
 
-Crie XML com o LINQ para XML
+**Crie XML com o LINQ para XML**
 
 Os recursos LINQ to XML incluem uma maneira muito fácil de
 criar documentos XML. O código na LISTAGEM
@@ -1073,7 +1070,7 @@ esta seção. Note que o arranjo do
 chamadas de construtor para cada item XElement espelham
 estrutura do documento.
 
-LISTAGEM Criar XML com LINQ
+**LISTAGEM Criar XML com LINQ**
 
 ```csharp
 XElement filmesXML = new XElement("Filmes",
@@ -1090,7 +1087,7 @@ XElement filmesXML = new XElement("Filmes",
 ```
 
 
-Modificar dados com o LINQ para XML
+**Modificar dados com o LINQ para XML**
 
 A classe XElement fornece métodos que podem ser
 usado para modificar o conteúdo de um determinado elemento XML.
@@ -1100,7 +1097,7 @@ título "meu caminho" e, em seguida, usa o ReplaceWith
 método sobre os dados do título no elemento para mudar o
 título para o título correto, que é "meu caminho".
 
-LISTAGEM Modificar XML com LINQ
+**LISTAGEM Modificar XML com LINQ**
 
 ```csharp
 filmesSelecionados2 =
@@ -1134,7 +1131,7 @@ código na LISTAGEM encontra todos os itens em nossa
 dados de amostra que estão faltando um elemento de estilo e, em seguida,
 adiciona o elemento ao item.
 
-LISTAGEM: Adicionar XML com LINQ
+**LISTAGEM: Adicionar XML com LINQ**
 
 
 ```csharp
