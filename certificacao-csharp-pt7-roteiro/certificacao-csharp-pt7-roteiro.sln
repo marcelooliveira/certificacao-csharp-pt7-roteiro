@@ -9,6 +9,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01 eventos", "01 eventos", 
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02 linq", "02 linq", "{1251E13E-E3F5-42F1-A998-60D096B86887}"
+	ProjectSection(SolutionItems) = preProject
+		LINQ.md = LINQ.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01.01 criar eventos", "01.01 criar eventos", "{63C3432E-B18E-4843-B20F-BA985149B7CC}"
 EndProject
