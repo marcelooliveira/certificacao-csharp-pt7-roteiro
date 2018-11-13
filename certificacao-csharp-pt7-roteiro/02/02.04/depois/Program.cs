@@ -147,41 +147,6 @@ namespace _02_04
             }
             Console.WriteLine();
 
-            IEnumerable<Filme> queryMetodo =
-                filmes.Where(filme => filme.Diretor.Nome == "James Cameron");
-
-
-
-
-
-            var resumoDiretorPorMetodo =
-            filmes
-            .Join(diretores,
-                filme => filme.DiretorId,
-                diretor => diretor.Id,
-                (filme, diretor) =>
-                new
-                {
-                    filme,
-                    diretor
-                }
-            )
-            .GroupBy(temp => temp.diretor)
-            .Select(resumoDiretorFilme =>
-            new
-            {
-                Diretor = resumoDiretorFilme.Key,
-                TotalMinutos = resumoDiretorFilme.Sum(x => x.filme.Minutos)
-            });
-            Console.WriteLine($"{"Nome Diretor",-30}{"Total Minutos",20}");
-            Console.WriteLine(new string('=', 50));
-            foreach (var item in resumoDoDiretor)
-            {
-                Console.WriteLine($"{item.Diretor,-30}{item.TotalMinutos,20}");
-            }
-            Console.WriteLine();
-
-
             Console.ReadKey();
         }
 

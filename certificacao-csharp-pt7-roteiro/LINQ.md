@@ -685,7 +685,8 @@ outros itens de informação agregada. Você também pode
 crie seu próprio comportamento Agregado que será
 chamado em cada item sucessivo no grupo e Will
 gerar um único resultado agregado.
-Criar consultas LINQ baseadas em método
+
+**Criar consultas LINQ baseadas em método**
 
 A primeira consulta LINQ que você viu estava na LISTAGEM
 como mostrado aqui.
