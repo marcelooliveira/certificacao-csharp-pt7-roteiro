@@ -1,40 +1,16 @@
 # Consultar e manipular dados e objetos usando o LINQ
 
-Comandos SQL são demorados para criar e
-processar o resultado de uma consulta é um trabalho árduo.
-A Consulta INtegrated Language, ou LINQ, foi criada para
-torna muito fácil para programadores C# trabalhar com
-fontes de dados. Esta seção aborda o LINQ e como
-use-o.
-Note que há muitos exemplos de programas em
-esta seção, e as instruções LINQ podem ser um pouco
-difícil de entender no começo. No entanto, lembre-se que
-você pode baixar e executar todo o código de exemplo.
+A Consulta Integrada à Linguagem, ou LINQ, foi criada para
+tornar fácil o trabalho de programadores C# com
+fontes de dados.
 
-**Aplicação de exemplo**
+Vamos trabalhar com um programa que vai obter dados a partir
+de 2 listas:
 
-A fim de fornecer um bom contexto para a exploração
-de LINQ vamos desenvolver os Filmes
-aplicativo usado anteriormente neste livro. Esta aplicação
-permite o armazenamento de dados de filme. FIGURA
-mostra as classes no sistema. Note que no
-momento em que não estamos usando um banco de dados para armazenar a classe
-em formação. Mais tarde, vamos considerar como mapear isso
-projeto em um banco de dados.
+- 1 lista com dados de filmes
+- 1 lista com diretores de filmes
 
-Nas versões anteriores do aplicativo, o
-A classe Filme continha uma string que dava
-nome do diretor que gravou a faixa. No novo
-design, uma filme contém uma referência a um
-Objeto do diretor que descreve o diretor que registrou o
-faixa. A FIGURA mostra como isso funciona. Se um diretor
-registra mais de uma faixa (o que é muito provável), a
-detalhes do diretor só serão armazenados uma vez e referidos por
-muitas instâncias do Music Track.
-
-**FIGURA Projeto de classe de filmes**
-
-O código a seguir mostra o código C # para as classes.
+O código a seguir mostra o código C# para as classes que representam o diretor e o filme.
 
 ```csharp
 class Diretor
@@ -50,43 +26,10 @@ class Filme
 }
 ```
 
-Agora que você tem o design de classe para o
-aplicação, a próxima coisa a fazer é criar alguns
-dados de amostra. Isso deve ser feito de forma programática.
-Testar um sistema inserindo dados à mão é um mau
-idéia por várias razões. Primeiro, é muito
-consumir. Em segundo lugar, quaisquer alterações no armazenamento de dados
-design Vai significar que você provavelmente terá que entrar
-todos os dados novamente. E terceiro, o ato de criar o
-os dados de teste podem fornecer informações úteis sobre sua turma
-desenhar.
-
-LISTAGEM mostra código que cria alguns diretores
-e filmes. Você pode aumentar a quantidade de dados de teste
-adicionando mais diretores e títulos. Nesta versão todos
-os diretores gravaram todas as filmes. Aleatório
-gerador de números fornece cada faixa aleatória
-comprimento no intervalo de 20 a 600 segundos. Observe que
-porque o gerador de números aleatórios tem um fixo
-valor da semente os comprimentos de cada faixa Serão os mesmos
-cada vez que você executar o programa.
+Além dos dados de testes, também disponibilizamos no início do curso
+dois métodos `GetDiretores()` e `GetFilmes()`, que fornecem as listas de diretores e de filmes:
 
 ```csharp
-static void Main(string[] args)
-{
-    List<Diretor> diretores = GetDiretores();
-    List<Filme> filmes = GetFilmes();
-
-    Console.WriteLine($"{"Título",-30}{"Diretor",-20}{"Ano",4}");
-    Console.WriteLine(new string('=', 54));
-    foreach (var filme in filmes)
-    {
-        Console.WriteLine($"{filme.Titulo, -30}{filme.Diretor.Nome, -20}{filme.Ano}");
-    }
-
-    Console.ReadKey();
-}
-
 private static List<Diretor> GetDiretores()
 {
     return new List<Diretor>
@@ -110,19 +53,78 @@ private static List<Filme> GetFilmes()
 }
 ```
 
+Vamos começar nosso programa criando uma instância para cada lista:
+
+```csharp
+static void Main(string[] args)
+{
+    List<Diretor> diretores = GetDiretores();
+    List<Filme> filmes = GetFilmes();
+}
+```
+
+Mas qual o conteúdo dessas listas? Vamos criar um laço para pegar cada um dos
+elementos de `filmes` e imprimir seus dados no console:
+
+```csharp
+static void Main(string[] args)
+{
+    List<Diretor> diretores = GetDiretores();
+    List<Filme> filmes = GetFilmes();
+
+    Console.WriteLine($"{"Título",-30}{"Diretor",-20}{"Ano",4}");
+    Console.WriteLine(new string('=', 54));
+    foreach (var filme in filmes)
+    {
+        Console.WriteLine($"{filme.Titulo, -30}{filme.Diretor.Nome, -20}{filme.Ano}");
+    }
+
+    Console.ReadKey();
+}
+```
+
+Rodando a aplicação, temos nosso primeiro resultado:
+
 ![File3](file3.png)
+
+Mas note que esse código que imprime os filmes poderá ser utilizado depois, então podemos
+evitar a repetição desse algoritmo extraindo-o para um novo método `Imprimir()`::
+
+```csharp
+static void Main(string[] args)
+{
+    List<Diretor> diretores = GetDiretores();
+    List<Filme> filmes = GetFilmes();
+
+    Imprimir(filmes);
+
+    Console.ReadKey();
+}
+
+private static void Imprimir(List<Filme> filmes)
+{
+    Console.WriteLine($"{"Título",-40}{"Diretor",-20}{"Ano",4}");
+    Console.WriteLine(new string('=', 64));
+    foreach (var filme in filmes)
+    {
+        Console.WriteLine($"{filme.Titulo,-40}{filme.Diretor.Nome,-20}{filme.Ano}");
+    }
+    Console.WriteLine();
+}
+```
+
 
 **Use um inicializador de objeto**
 
 Se você olhar o código na LISTAGEM, verá que
 estamos usando a sintaxe do inicializador de objetos para criar novos
-instâncias dos objetos de música e inicializar seus
+instâncias dos objetos de filme e inicializar seus
 valores ao mesmo tempo. Esta é uma Cié muito útil
 recurso que permite inicializar objetos quando eles
 são criados sem a necessidade de criar um construtor
 método na classe que está sendo inicializada.
 O código a seguir mostra como funciona. A declaração
-cria e inicializa uma nova instância do Music Track.
+cria e inicializa uma nova instância do Filme.
 Observe o uso de chaves ({e}) para delimitar os itens
 que inicializam a instância e COMmas para separar
 cada valor sendo usado para inicializar o objeto.
@@ -151,7 +153,7 @@ filmes que foram gravadas pelo diretor com o nome
 "Tim Burton". A primeira declaração usa uma consulta LINQ para
 criar uma coleção enumerável de Filme
 
-referências chamadas selectedTracks que é então
+referências chamadas filmesSelecionados que é então
 enumerado pelo f o chegar a construção para imprimir
 os resultados.
 
@@ -295,7 +297,7 @@ Você pode usar a projeção para fazer uma consulta para "projetar"
 os dados na classe em novas instâncias de uma classe
 criado apenas para conter os dados retornados pela consulta.
 
-Vamos começar criando a classe chamada TrackDetai 1. s
+Vamos começar criando a classe chamada FilmeResumido
 que vai conter apenas o nome do diretor e o título de um
 faixa. Você vai usar isso para segurar o resultado da pesquisa
 inquerir.
@@ -395,7 +397,7 @@ tempo de compilação.
 O design de classe usado até este ponto usa c #
 referências para implementar as associações entre os
 objetos no sistema. Em outras palavras, uma filme
-objeto contém uma referência ao objeto Artist que
+objeto contém uma referência ao objeto Diretor que
 representa o diretor que gravou aquela faixa. Se vocês
 armazenar seus dados em um banco de dados, no entanto, você não será
 capaz de armazenar as associações dessa maneira.
@@ -404,7 +406,7 @@ Em vez disso, cada item no banco de dados terá um
 ID exclusivo (sua chave primária) e objetos referentes a
 esse objeto conterá esse valor de ID (uma chave estrangeira).
 Em vez de uma referência a uma instância do diretor, o
-O Filme agora contém um campo ArtistID que
+O Filme agora contém um campo DiretorId que
 identifica o diretor associado a essa faixa. FIGURA
 mostra como esta associação é implementada.
 
@@ -457,7 +459,7 @@ Outro recurso útil do LINQ é a capacidade de agrupar
 
 resultados de uma consulta para criar uma saída de resumo. Para
 Por exemplo, você pode querer criar uma consulta para saber como
-muitas faixas existem por cada diretor na música
+muitas faixas existem por cada diretor na filme
 coleção.
 A LISTAGEM mostra como fazer isso. O grupo
 ação é dado o item de dados para agrupar por e o
@@ -571,7 +573,7 @@ determinado número de itens no resultado antes de tomar
 o número solicitado.
 
 O programa de amostra na LISTAGEM exibe todos
-a música acompanha dez itens de cada vez. Ele usa um loop
+a filme acompanha dez itens de cada vez. Ele usa um loop
 que usa o Skip para ir progressivamente mais abaixo
 o banco de dados toda vez que o loop é repetido. O laço
 termina Quando a consulta LINQ retorna um vazio
@@ -722,8 +724,8 @@ Imprimir(filmesSelecionados);
 O método Where aceita uma expressão lambda como
 um parâmetro. Neste caso, a expressão lambda
 aceita uma filme como um parâmetro e retorna
-Verdadeiro se a propriedade Name do elemento Artist em
-o Mus i cTrack corresponde ao nome que está sendo
+Verdadeiro se a propriedade Name do elemento Diretor em
+o Filme corresponde ao nome que está sendo
 selecionado.
 
 Você viu pela primeira vez expressões lambda na Habilidade 1.4,
@@ -782,7 +784,7 @@ familiarizado com a sintaxe SQL para usar o LINQ.
 
 A LISTAGEM mostra uma consulta LINQ complexa que é
 com base na consulta LINQ usada na LISTAGEM para
-produzir um resumo dando a duração da música por
+produzir um resumo dando a duração da filme por
 cada diretor. Isso usa o operador orderby para pedir
 a saída pelo nome do diretor.
 
@@ -917,7 +919,7 @@ Note que, no caso deste exemplo, o resultado será
 resultado. O programa foi pausado logo após a
 a variável Resultado do acompanhamento do diretor foi definida como
 resultado da consulta, e o depurador está mostrando o conteúdo
-do diretor Track Result.
+do diretorFilme.
 
 
 [IMAGEM]
@@ -986,7 +988,7 @@ Ao trabalhar com XML. Isso porque a fonte
 
 da consulta é um conjunto filtrado de entradas XML do
 documento Fonte. A LISTAGEM mostra como isso funciona.
-A consulta seleciona todos os elementos "Music Track" de
+A consulta seleciona todos os elementos "Filme" de
 o documento de origem. O resultado da consulta é um
 enumeração de itens do XElement que foram
 extraído do documento. A classe XElement é
