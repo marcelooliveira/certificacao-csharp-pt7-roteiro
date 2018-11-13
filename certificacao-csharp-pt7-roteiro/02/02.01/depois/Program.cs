@@ -203,7 +203,7 @@ namespace _01_03
 
 
 
-            var resumoArtistaPorMetodo =
+            var resumoDiretorPorMetodo =
             filmes
             .Join(diretores,
                 filme => filme.DiretorId,

@@ -1,4 +1,4 @@
-Consultar e manipular dados e objetos usando o LINQ
+# Consultar e manipular dados e objetos usando o LINQ
 
 Comandos SQL são demorados para criar e
 processar o resultado de uma consulta é um trabalho árduo.
@@ -14,7 +14,7 @@ você pode baixar e executar todo o código de exemplo.
 Aplicação de exemplo
 
 A fim de fornecer um bom contexto para a exploração
-de LINQ vamos desenvolver os Music TrackS
+de LINQ vamos desenvolver os Filmes
 aplicativo usado anteriormente neste livro. Esta aplicação
 permite o armazenamento de dados de faixa de música. Figura 4–15
 mostra as classes no sistema. Note que no
@@ -23,13 +23,13 @@ em formação. Mais tarde, vamos considerar como mapear isso
 projeto em um banco de dados.
 
 Nas versões anteriores do aplicativo, o
-A classe MusicTrack continha uma string que dava
-nome do artista que gravou a faixa. No novo
+A classe Filme continha uma string que dava
+nome do diretor que gravou a faixa. No novo
 design, uma faixa de música contém uma referência a um
-Objeto do artista que descreve o artista que registrou o
-faixa. A Figura 4–15 mostra como isso funciona. Se um artista
+Objeto do diretor que descreve o diretor que registrou o
+faixa. A Figura 4–15 mostra como isso funciona. Se um diretor
 registra mais de uma faixa (o que é muito provável), a
-detalhes do artista só serão armazenados uma vez e referidos por
+detalhes do diretor só serão armazenados uma vez e referidos por
 muitas instâncias do Music Track.
 
 FIGURA 4-15 Projeto de classe de trilhas de música
@@ -61,10 +61,10 @@ todos os dados novamente. E terceiro, o ato de criar o
 os dados de teste podem fornecer informações úteis sobre sua turma
 desenhar.
 
-LISTAGEM mostra código que cria alguns artistas
+LISTAGEM mostra código que cria alguns diretores
 e faixas. Você pode aumentar a quantidade de dados de teste
-adicionando mais artistas e títulos. Nesta versão todos
-os artistas gravaram todas as faixas. Aleatório
+adicionando mais diretores e títulos. Nesta versão todos
+os diretores gravaram todas as faixas. Aleatório
 gerador de números fornece cada faixa aleatória
 comprimento no intervalo de 20 a 600 segundos. Observe que
 porque o gerador de números aleatórios tem um fixo
@@ -147,9 +147,9 @@ Use um operador LINQ
 Agora que você tem alguns dados pode usar operadores LINQ
 para construir consultas e extrair resultados dos dados. o
 código na LISTAGEM imprime os títulos de todos os
-faixas que foram gravadas pelo artista com o nome
-"Rob Miles". A primeira declaração usa uma consulta LINQ para
-criar uma coleção enumerável de MusicTrack
+faixas que foram gravadas pelo diretor com o nome
+"Tim Burton". A primeira declaração usa uma consulta LINQ para
+criar uma coleção enumerável de Filme
 
 referências chamadas selectedTracks que é então
 enumerado pelo f o chegar a construção para imprimir
@@ -279,7 +279,7 @@ Projeção LINQ
 Você pode usar a operação de seleção no LINQ para
 produzir uma versão filtrada de uma fonte de dados. Em
 exemplos anteriores você descobriu todas as faixas
-gravado por um artista em particular. Você pode criar outro
+gravado por um diretor em particular. Você pode criar outro
 critérios de pesquisa, por exemplo, selecionando as faixas
 com um certo título, ou faixas mais longas que um certo
 comprimento.
@@ -297,7 +297,7 @@ os dados na classe em novas instâncias de uma classe
 criado apenas para conter os dados retornados pela consulta.
 
 Vamos começar criando a classe chamada TrackDetai 1. s
-que vai conter apenas o nome do artista e o título de um
+que vai conter apenas o nome do diretor e o título de um
 faixa. Você vai usar isso para segurar o resultado da pesquisa
 inquerir.
 
@@ -355,7 +355,7 @@ select new // tipo anônimo: tipo da projeção não é necessário
 A consulta na LISTAGEM cria novas instâncias de
 um tipo anônimo que contém apenas os itens de dados
 caso a primeira propriedade no tipo é o nome do
-artista que grava a faixa, e o segundo é o título de
+diretor que grava a faixa, e o segundo é o título de
 a faixa. Para a primeira propriedade você realmente fornece
 o nome do campo a ser criado no novo tipo.
 Para a segunda propriedade, a propriedade é criada com
@@ -398,38 +398,38 @@ O design de classe usado até este ponto usa c #
 referências para implementar as associações entre os
 objetos no sistema. Em outras palavras, uma faixa de música
 objeto contém uma referência ao objeto Artist que
-representa o artista que gravou aquela faixa. Se vocês
+representa o diretor que gravou aquela faixa. Se vocês
 armazenar seus dados em um banco de dados, no entanto, você não será
 capaz de armazenar as associações dessa maneira.
 
 Em vez disso, cada item no banco de dados terá um
 ID exclusivo (sua chave primária) e objetos referentes a
 esse objeto conterá esse valor de ID (uma chave estrangeira).
-Em vez de uma referência a uma instância do Artista, o
-O MusicTrack agora contém um campo ArtistID que
-identifica o artista associado a essa faixa. Figura
+Em vez de uma referência a uma instância do diretor, o
+O Filme agora contém um campo ArtistID que
+identifica o diretor associado a essa faixa. Figura
 4—16 mostra como esta associação é implementada.
 
 olD: In!
 3:53:25
 Names‘rmn
 
-FIGURA 4-16 Faixas de Música e Identificação do Artista
+FIGURA 4-16 Faixas de Música e Identificação do diretor
 
 Esse design dificulta um pouco a pesquisa
-para faixas de um artista em particular. O programa precisa
-encontre o valor do ID para o artista com o nome sendo
+para faixas de um diretor em particular. O programa precisa
+encontre o valor do ID para o diretor com o nome sendo
 procurou e, em seguida, procure por todas as faixas com isso
-valor do id do artista. Felizmente, o LINQ fornece uma junção
+valor do id do diretor. Felizmente, o LINQ fornece uma junção
 operador que pode ser usado para juntar a saída de um LINQ
 consulta para a entrada de outro.
 
 A LISTAGEM mostra como isso funciona. A primeira consulta
-seleciona o artista Com o nome "Rob Miles". Os resultados
+seleciona o diretor Com o nome "Tim Burton". Os resultados
 dessa consulta são unidos à segunda consulta
 que pesquisa a coleção de faixas de música para faixas
 Com uma propriedade stid Arti que corresponda à do
-artista encontrado pela primeira quely.
+diretor encontrado pela primeira quely.
 
 LISTAGEM Junção LINQ
 
@@ -459,18 +459,18 @@ Outro recurso útil do LINQ é a capacidade de agrupar
 
 resultados de uma consulta para criar uma saída de resumo. Para
 Por exemplo, você pode querer criar uma consulta para saber como
-muitas faixas existem por cada artista na música
+muitas faixas existem por cada diretor na música
 coleção.
 A LISTAGEM mostra como fazer isso. O grupo
 ação é dado o item de dados para agrupar por e o
 propriedade por que é para ser agrupado. o
-O resumo da trilha do artista contém uma entrada para cada
-artista diferente. Cada um dos itens no resumo tem
+O resumo da trilha do diretor contém uma entrada para cada
+diretor diferente. Cada um dos itens no resumo tem
 uma propriedade Key, que é o valor que o item é
 "Agrupados" ao redor. Você quer criar um grupo ao redor
-artistas, então a chave é o valor do ID do Artista de cada
+diretores, então a chave é o valor do ID do diretor de cada
 faixa. A propriedade Key do
-O resumo da trilha do artista fornece o valor dessa chave.
+O resumo da trilha do diretor fornece o valor dessa chave.
 Você pode usar comportamentos fornecidos por um objeto de resumo
 para descobrir o conteúdo do resumo e
 o método Count retorna o número de itens no
@@ -511,20 +511,17 @@ Console.WriteLine();
 
 O problema Com esta consulta é que quando executá-lo
 produz os resultados como mostrado a seguir. Ao invés de
-gerando o nome do artista, o programa
-exibe os valores do ID do Artista.
+gerando o nome do diretor, o programa
+exibe os valores do ID do diretor.
 
 
-Artist: 0 Tracks recordedz5
-Artist: 6 Tracks recorded: 5
-Artist:12 Tracks recordedz5
-Artist:18 Tracks recorded:5
+[resultado]
 
 
 Você pode consertar isso usando uma operação de junção
-Isso irá extrair o nome do artista para uso na consulta.
+Isso irá extrair o nome do diretor para uso na consulta.
 A junção necessária é mostrada a seguir. Você pode então criar
-o grupo digitou o nome do artista em vez do ID
+o grupo digitou o nome do diretor em vez do ID
 para obter o resultado desejado.
 
 ```csharp
@@ -630,15 +627,15 @@ operações. Você já usou um agregado
 operador em uma consulta LINQ. Você usou o Conde
 
 operador na LISTAGEM para contar o número de trilhas
-em um grupo extraído pelo artista. Isso forneceu a
-número de faixas atribuídas a um determinado artista. Você
+em um grupo extraído pelo diretor. Isso forneceu a
+número de faixas atribuídas a um determinado diretor. Você
 pode querer obter o comprimento total de todas as faixas
-atribuído a um artista, e para isso você pode usar a Soma
+atribuído a um diretor, e para isso você pode usar a Soma
 operador agregado.
 O parâmetro para o operador Sum é um lambda
 expressão que o operador “mal usa em cada item
 o grupo para obter o valor a ser adicionado ao total
-soma para esse item. Para obter a soma do MusicTrack
+soma para esse item. Para obter a soma do Filme
 comprimentos, a expressão lambda apenas retorna o valor
 da propriedade Length para o item. LISTAGEM
 mostra como isso funciona.
@@ -670,9 +667,9 @@ Console.WriteLine();
 
 
 O resultado dessa consulta é uma coleção de
-Objetos anônimos que contêm o nome do artista
+Objetos anônimos que contêm o nome do diretor
 e o comprimento total de todas as faixas gravadas por esse
-artista. O programa produz a seguinte saída:
+diretor. O programa produz a seguinte saída:
 
 
 
@@ -738,7 +735,7 @@ método está recebendo um pedaço de comportamento que o
 método pode usar para determinar quais faixas selecionar.
 
 Neste caso, o comportamento é “pegar uma pista e ver se o
-nome do artista é Rob Miles. ”Você pode criar o seu próprio
+nome do diretor é Tim Burton. ”Você pode criar o seu próprio
 consultas baseadas em método em vez de usar o LINQ
 operadores. LISTAGEM mostra a consulta LINQ e o
 comportamento baseado em método correspondente.
@@ -787,8 +784,8 @@ familiarizado com a sintaxe SQL para usar o LINQ.
 A LISTAGEM mostra uma consulta LINQ complexa que é
 com base na consulta LINQ usada na LISTAGEM para
 produzir um resumo dando a duração da música por
-cada artista. Isso usa o operador orderby para pedir
-a saída pelo nome do artista.
+cada diretor. Isso usa o operador orderby para pedir
+a saída pelo nome do diretor.
 
 LISTAGEM Consulta completa
 
@@ -835,8 +832,8 @@ Seção “Tipos anônimos”, anteriormente neste capítulo.
 Os últimos exemplos de programas mostraram o uso de
 tipos anônimos movendo-se da criação de valores que
 resumir o conteúdo de um objeto de dados de origem
-exemplo extraindo apenas o artista e título
-informações de um valor do MusicTrack), para criar
+exemplo extraindo apenas o diretor e título
+informações de um valor do Filme), para criar
 tipos completamente novos que contêm dados do
 banco de dados e os resultados dos operadores agregados.
 
@@ -847,14 +844,14 @@ implementação da consulta da LISTAGEM;
 tipo anônimo é mostrado em negrito. Observe o uso de um
 classe anônima intermediária que é usada para
 implementar a junção entre as duas consultas e
-gerar objetos que contenham artista e faixa
+gerar objetos que contenham diretor e faixa
 em formação.
 
 LISTAGEM Tipos anônimos complexos
 
 
 ```csharp
-var resumoArtistaPorMetodo =
+var resumoDiretorPorMetodo =
 filmes
 .Join(diretores,
     filme => filme.DiretorId,
@@ -920,9 +917,9 @@ Console.WriteLine();
 
 Note que, no caso deste exemplo, o resultado será
 resultado. O programa foi pausado logo após a
-a variável Resultado do acompanhamento do artista foi definida como
+a variável Resultado do acompanhamento do diretor foi definida como
 resultado da consulta, e o depurador está mostrando o conteúdo
-do artista Track Result.
+do diretor Track Result.
 
 
 [IMAGEM]
@@ -946,8 +943,8 @@ que fornecem esses comportamentos estão no
 Sistema. XML Namespace Linq.
 Exemplo de Documento XML
 O documento XML de amostra é mostrado a seguir. Contém
-dois itens do Musictrack que são mantidos dentro de
-Elemento Music Tracks. O texto da amostra
+dois itens do Filme que são mantidos dentro de
+Elemento Filmes. O texto da amostra
 documento é armazenado em uma variável de cadeia chamada
 XMLText.
 
@@ -1132,7 +1129,7 @@ remover elementos para alterar a estrutura do XML
 documento.
 
 Suponha que você decida adicionar um novo elemento de dados
-para Musictrack. Você quer armazenar o "gênero" do
+para Filme. Você quer armazenar o "gênero" do
 código na LISTAGEM encontra todos os itens em nossa
 dados de amostra que estão faltando um elemento de estilo e, em seguida,
 adiciona o elemento ao item.
