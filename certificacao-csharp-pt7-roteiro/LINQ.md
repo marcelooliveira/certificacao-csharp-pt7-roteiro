@@ -276,7 +276,7 @@ Para escrever esta declaração, você deve primeiro descobrir o tipo
 de dados na coleção de filmes e, em seguida, usar
 esse tipo com `IEnumerable<Filme>`.
 
-A palavra-chave var torna este código mais fácil de escrever:
+A palavra-chave `var` torna este código mais fácil de escrever:
 
 ```csharp
 var selecionados =
@@ -284,33 +284,22 @@ from filme in filmes
 where filme.Diretor.Nome == "Tim Burton"
 select filme;
 ```
+
 **Projeção LINQ**
 
-Você pode usar a operação de seleção no LINQ para
-produzir uma versão filtrada de uma fonte de dados. Em
-exemplos anteriores você descobriu todas os filmes
-gravado por um diretor em particular. Você pode criar outro
-critérios de pesquisa, por exemplo, selecionando os filmes
-com um certo título, ou filmes mais longas que um certo
-comprimento.
+No exemplo acima, a consulta produz o mesmo objeto contido na
+coleção de origem (filmes).
 
-O resultado de um select é uma coleção de referências
-para objetos na coleção de dados de origem. Existe um
-algumas razões Por que um programa pode não querer
-funcionam assim. Primeiro, você pode não querer fornecer
-referências aos objetos de dados reais nos dados
-fonte. Em segundo lugar, você pode querer o resultado de uma consulta
-para conter um subconjunto dos dados originais.
+Mas você pode usar a operação de seleção no LINQ para
+produzir uma versão *transformada* de cada objeto da fonte de dados. 
+Em vez de retornar um Filme, você pode retornar um outro tipo de objeto
+usando os dados de Filme.
 
-Você pode usar a projeção para fazer uma consulta para "projetar"
-os dados na classe em novas instâncias de uma classe
-criado apenas para conter os dados retornados pela consulta.
+O nome desse processo de tranformar os dados da saída é **projeção LINQ**.
 
-Vamos começar criando a classe chamada FilmeResumido
+Vamos demonstrar isso criando a classe chamada FilmeResumido,
 que vai conter apenas o nome do diretor e o título de um
-filme. Você vai usar isso para segurar o resultado da pesquisa
-inquerir.
-
+filme.
 
 ```csharp
 class FilmeResumido
@@ -320,9 +309,7 @@ class FilmeResumido
 }
 ```
 
-
-A consulta pode agora ser solicitada para criar uma nova
-instância desta classe para manter o resultado de cada consulta.
+Essa será a classe usada na nossa **projeção de dados** com a cláusula select da consulta LINQ.
 
 ```csharp
 var selecionados2 =
@@ -335,54 +322,61 @@ select new FilmeResumido
 };
 ```
 
-
-Resultados de projeção como este são particularmente úteis
-Quando você está usando a vinculação de dados para exibir
-resultados para o usuário. Os valores no resultado da consulta podem ser
-vinculado a itens a serem exibidos.
+Esse tipo de consulta é bem comum quando temos "dados brutos" em banco
+de dados, mas queremos exibir ao usuário os dados "transformados", num formato amigável.
 
 **Tipos anônimos**
 
-Você pode remover a necessidade de criar uma classe para manter o
-resultado de uma consulta de pesquisa, fazendo com que a consulta retorne
-resultados de um tipo anônimo. Você pode ver como isso
-agora está faltando no final do novo select
-declaração.
-
+Observe a cláusula de "projeção" (select) desta consulta LINQ
 
 ```csharp
-var selecionados3 =
-from filme in filmes
-where filme.Diretor.Nome == "Tim Burton"
-select new // tipo anônimo: tipo da projeção não é necessário
+var selecionados2 =
+from ...
+select new FilmeResumido
 {
     NomeDiretor = filme.Diretor.Nome,
-    filme.Titulo
+    Titulo = filme.Titulo
 };
 ```
 
+Nesse caso, fomos obrigados a criar um tipo novo, a classe FilmeResumido, para
+armazenar os dados do filme resumido.
 
-A consulta na LISTAGEM cria novas instâncias de
-um tipo anônimo que contém apenas os itens de dados
-caso a primeira propriedade no tipo é o nome do
-diretor que dirigiu o filme, e o segundo é o título de
-o filme. Para a primeira propriedade você realmente fornece
-o nome do campo a ser criado no novo tipo.
-Para a segunda propriedade, a propriedade é criada com
-mesmo nome que a propriedade de origem, neste caso o
-nome da propriedade será 1 e.
+Mas muitas vezes isso não é obrigatório. Vamos remover o nome da classe FilmeResumido no instanciamento do select:
 
-O item que é retornado por este queiy é um
-coleção enumerável de instâncias de um tipo que tem
-sem nome É um tipo anônimo. Isso significa que você
-tem que usar uma referência var para se referir à consulta
-resultado. Você pode percorrer a coleção neste
+```csharp
+var selecionados2 =
+from ...
+select new // tipo anônimo: tipo da projeção não é obrigatório
+{
+    NomeDiretor = filme.Diretor.Nome,
+    Titulo = filme.Titulo
+};
+```
+
+A consulta acima cria novas instâncias de
+um **tipo anônimo** que contém apenas os itens de dados:
+- nome do diretor que dirigiu o filme
+- título do filme.
+
+Observe que, para a primeira propriedade, você forneceu
+o nome do campo a ser criado no novo tipo (NomeDiretor). Já a
+segunda propriedade foi criada com o
+**mesmo nome** que a propriedade de origem.
+Quando não há redefinição de nome, o compilador presume o nome
+da propriedade `Titulo`.
+
+O resultado retornado por esta query é uma
+coleção enumerável de instâncias de um tipo sem nome.
+É um **tipo anônimo**. Isso significa que você
+tem que usar uma **referência var** para se referir ao 
+resultado da consulta.
+
+Você pode percorrer a coleção neste
 resultado como você faria com qualquer outro. Note que cada item
-a coleção de filmes selecionada deve ser de 110W
-referido usando var porque seu tipo não tem nome.
-O código a seguir mostra como var é usado para cada item
-
-Ao imprimir os resultados da consulta na LISTAGEM.
+da coleção de filmes selecionada deve ser agora
+referido usando **var** na instrução `foreach` porque seu tipo não tem nome.
+O código a seguir mostra como `var` é usado para cada item:
 
 
 ```csharp
@@ -393,55 +387,68 @@ foreach (var filme in selecionados3)
 ```
 
 
-Observe que o uso de um tipo anônimo não
-significa que o compilador é menos rigoroso quando
-verificando a exatidão do código. Se o programa
-tenta usar uma propriedade que não está presente no item,
-por exemplo, se ele tentar obter a propriedade Length
-a partir do resultado do quely, isso gera um erro em
-tempo de compilação.
+Observe que, mesmo quando o tipo é anônimo, não
+significa que o compilador vai deixar de ser rigoroso com a
+exatidão do código.
+
+Enquanto digitamos, as 2 propriedades (`Titulo` e `NomeDiretor`) são
+verificadas pelo compilador. Não podemos inventar e utilizar aqui
+propriedades que não existem no `select` da consulta LINQ anterior.
 
 **Junção LINQ**
 
-O design de classe usado até este ponto usa c #
-referências para implementar as associações entre os
-objetos no sistema. Em outras palavras, uma filme
-objeto contém uma referência ao objeto Diretor que
-representa o diretor que gravou aquele filme. Se vocês
-armazenar seus dados em um banco de dados, no entanto, você não será
-capaz de armazenar as associações dessa maneira.
+Até aqui, trabalhamos com a classe `Filme`, que possui como propriedade
+o `Diretor`, que é uma instância da classe `Diretor`:
+
+```csharp
+class Filme
+{
+    public Diretor Diretor { get; set; }
+    public string Titulo { get; set; }
+}
+```
+
+No entanto, se você está trabalhando com um banco de dados, 
+muitas vezes você não pode armazenar as associações dessa maneira.
 
 Em vez disso, cada item no banco de dados terá um
 ID exclusivo (sua chave primária) e objetos referentes a
 esse objeto conterá esse valor de ID (uma chave estrangeira).
-Em vez de uma referência a uma instância do diretor, o
-O Filme agora contém um campo DiretorId que
-identifica o diretor associado a esse filme. FIGURA
-mostra como esta associação é implementada.
 
-olD: In!
-3:53:25
-Names‘rmn
+Em vez de uma *referência* a uma instância do `Diretor`, o
+o `Filme` agora contém um campo `DiretorId` que
+identifica o diretor associado a esse filme.
 
-**FIGURA filmes e Identificação do diretor**
+```csharp
+class Filme
+{
+    public int DiretorId { get; set; }
+    public string Titulo { get; set; }
+}
+
+```
 
 Esse design dificulta um pouco a pesquisa
 para filmes de um diretor em particular. O programa precisa
-encontre o valor do ID para o diretor com o nome sendo
-procurou e, em seguida, procure por todos os filmes com isso
-valor do id do diretor. Felizmente, o LINQ fornece uma junção
-operador que pode ser usado para juntar a saída de um LINQ
-consulta para a entrada de outro.
+encontrar o valor do ID para o diretor com um determinado nome sendo
+procurado e, em seguida, procurar por todos os filmes com esse
+valor de `DiretorId`.
 
-A LISTAGEM mostra como isso funciona. A primeira consulta
-seleciona o diretor Com o nome "Tim Burton". Os resultados
-dessa consulta são unidos à segunda consulta
-que pesquisa a coleção de filmes para filmes
-Com uma propriedade stid Arti que corresponda à do
-diretor encontrado pela primeira quely.
+Felizmente, o LINQ fornece um **operador de junção** (`join`)
+que pode ser usado para *juntar* a saída de uma consulta LINQ
+com a *entrada* de outra consulta.
 
-**LISTAGEM Junção LINQ**
+A cláusula *join* da consulta é definida pela sintaxe:
 
+```csharp
+join b in [OrigemB]
+on b.CampoB equals a.CampoA
+```
+
+Aplicando em nossa consulta, a `OrigemB` é a lista `diretores`,
+e os campos `CampoA` e `CampoB` são `filme.DiretorId` e
+`diretor.Id`, respectivamente. Esses campos são as propriedades
+onde é realizada a *junção*.
 
 ```csharp
 var filmesDeDiretores =
@@ -461,34 +468,62 @@ foreach (var filme in filmesDeDiretores)
 }
 ```
 
+Note que a cláusula `select` agora foi modificada, de forma
+que cada propriedade do objeto anônimo de saída (projeção LINQ)
+vem de uma entidade diferente do **join**:
+
+```csharp
+select new
+{
+    NomeDiretor = diretor.Nome,
+    filme.Titulo
+};
+```
 
 **Grupo LINQ**
 
 Outro recurso útil do LINQ é a capacidade de agrupar
 
-resultados de uma consulta para criar uma saída de resumo. Para
-Por exemplo, você pode querer criar uma consulta para saber como
-muitos filmes existem por cada diretor na filme
-coleção.
-A LISTAGEM mostra como fazer isso. O grupo
-ação é dado o item de dados para agrupar por e o
-propriedade por que é para ser agrupado. o
-O resumo da filme do diretor contém uma entrada para cada
-diretor diferente. Cada um dos itens no resumo tem
-uma propriedade Key, que é o valor que o item é
-"Agrupados" ao redor. Você quer criar um grupo ao redor
-diretores, então a chave é o valor do ID do diretor de cada
-filme. A propriedade Key do
-O resumo da filme do diretor fornece o valor dessa chave.
-Você pode usar comportamentos fornecidos por um objeto de resumo
-para descobrir o conteúdo do resumo e
-o método Count retorna o número de itens no
-resumo. Você descobrirá mais resumo
-comandos na discussão sobre o agregado
-comandos mais adiante nesta seção.
+Imagine uma nova consulta, descrita em português como:
 
-**LISTAGEM grupo LINQ**
+> ***"Traga-me o Id de cada diretor, ao lado da quantidade de filmes
+> dirigidos desse diretor"***
 
+Como implementar essa consulta com LINQ?
+
+Primeiro temos que lembrar que cada elemento da nossa consulta atual
+representa *um filme individual* de um diretor.
+
+Precisamos modificar a consulta para que cada linha do resultado
+seja um **agrupamento** para um único diretor. 
+ 
+Para isso, temos que usar a sintaxe de agrupamento da **cláusula group** do LINQ:
+
+Primeiro, começamos com a origem de dados, contendo todos os dados de filmes.
+
+```csharp
+var resumoDiretor =
+from filme in filmes
+```
+
+Em seguida, agrupamos os filmes por *id de diretor*, e armazenamos
+o resultado do agrupamento em uma *variável de consulta* chamada
+`resumoFilmeDiretor`:
+
+```csharp
+var resumoDiretor =
+from filme in filmes
+group filme by filme.DiretorId
+into resumoFilmeDiretor
+```
+
+Essa variável `resumoFilmeDiretor` é visível apenas dentro da consulta.
+
+O próximo passo é fornecer informações para as 2 colunas de dados
+que precisamos:
+
+- O Id do diretor
+- A quantidade de filmes desse diretor
 
 ```csharp
 var resumoDiretor =
@@ -502,10 +537,15 @@ select new
 };
 ```
 
+Para obtermos esse resultado, foi necessário obter a *chave (key)*
+do agrupamento, e invocar uma das *funções de agregação (Count)* 
+que estão presentes quando realizamos um agrupamento.
 
-classes produzidas por esta consulta usando um foreach
-loop como mostrado a seguir.
+![File7](file7.png)
 
+
+Para listar os resultados desta última consulta, vamos percorrer
+o resultado da consulta com a instrução `foreach`:
 
 ```csharp
 Console.WriteLine($"{"DiretorId",-20}{"Quantidade",10}");
@@ -517,20 +557,23 @@ foreach (var item in resumoDiretor)
 Console.WriteLine();
 ```
 
+Note que cada elemento contém o Id do diretor e a quantidade de filmes.
 
-O problema Com esta consulta é que quando executá-lo
-produz os resultados como mostrado a seguir. Ao invés de
-gerando o nome do diretor, o programa
-exibe os valores do ID do diretor.
+```
+DiretorId           Quantidade
+==============================
+1                            3
+2                            3
+3                            3
+```
 
+Mas um relatório com o id do diretor não é muito útil, porque não sabemos quem é cada diretor.
 
-**[resultado]**
-
-
-Você pode consertar isso usando uma operação de junção
+Você pode consertar isso introduzindo na consulta uma *operação de junção*.
 Isso irá extrair o nome do diretor para uso na consulta.
+
 A junção necessária é mostrada a seguir. Você pode então criar
-o grupo digitou o nome do diretor em vez do ID
+o grupo com o nome do diretor em vez do ID
 para obter o resultado desejado.
 
 ```csharp
@@ -566,31 +609,30 @@ James Cameron                3
 Tim Burton                   4
 ```
 
-
-Note que esta é uma forte magia LINQ. Vale a pena
-jogando com o código de amostra um pouco e examinando
-a estrutura da consulta para ver o que está acontecendo.
-LINQ Pegue e pule
+**LINQ Take e Skip**
 
 Uma consulta LINQ normalmente retornará todos os itens
-que se encontra. No entanto, isso pode ser mais itens que
-seu programa quer. Por exemplo, você pode querer
-mostre ao usuário a saída uma página por vez. Você pode
-use take para dizer à consulta para pegar um número específico
-de itens e o Skip para dizer uma consulta para pular um
-determinado número de itens no resultado antes de tomar
-o número solicitado.
+que se encontra. No entanto, esse tipo de consulta pode 
+trazer mais itens que seu programa precisa.
 
-O programa de amostra na LISTAGEM exibe todos
-a filme acompanha dez itens de cada vez. Ele usa um loop
-que usa o Skip para ir progressivamente mais abaixo
-o banco de dados toda vez que o loop é repetido. O laço
-termina Quando a consulta LINQ retorna um vazio
-coleção. O usuário pressiona uma tecla no final de cada
-página para passar para a próxima página.
+Por exemplo, você pode desenvolver uma consulta para um relatório 
+enorme a ser exibido numa página web, e querer mostrar ao usuário
+o conteúdo de **uma página por vez**.
 
-**LISTAGEM LINQ tomar e pular**
+Você pode usar o método `Take()` para dizer à consulta para pegar
+um número  específico de itens e o `Skip()` para dizer uma consulta
+para pular um determinado número de itens no resultado antes de obter
+a quantidade solicitada.
 
+Geralmente, os métodos Take() e Skip() são usados em algoritmos de
+paginação. A sintaxe simplificada de uma consulta LINQ com paginação é:
+
+```csharp
+from d in dados
+dados.Skip(NUMERO_DA_PAGINA * TAMANHO_PAGINA).Take(TAMANHO_PAGINA)
+```
+
+Podemos agora aplicar essa paginação em nossa consulta:
 
 ```csharp
 int numeroPagina = 0;
@@ -626,31 +668,48 @@ while (true)
 }
 ```
 
+O programa exibe dez itens de filmes cada vez.
+Ele usa um loop que usa o método `Skip()` para ir trazendo
+progressivamente mais páginas a partir do banco de dados 
+toda vez que o loop é repetido.
+
+O laço termina quando a consulta LINQ retorna uma coleção vazia.
+O usuário pressiona uma tecla no final de cada página para passar
+para a próxima página.
+
 **Comandos Agregados do LINQ**
 
 No contexto dos comandos LINQ, a palavra
-agregado significa “reunir um certo número de
-valores para criar um único resultado. ”Você pode usar
-operadores sobre os resultados produzidos por
-operações. Você já usou um agregado
-operador em uma consulta LINQ. Você usou o Conde
+**agregado** significa "reunir um certo número de
+valores para criar um único resultado"
 
-operador na LISTAGEM para contar o número de filmes
-em um grupo extraído pelo diretor. Isso forneceu a
-número de filmes atribuídas a um determinado diretor. Você
-pode querer obter o comprimento total de todas os filmes
-atribuído a um diretor, e para isso você pode usar a Soma
-operador agregado.
-O parâmetro para o operador Sum é um lambda
-expressão que o operador “mal usa em cada item
-o grupo para obter o valor a ser adicionado ao total
-soma para esse item. Para obter a soma do Filme
-comprimentos, a expressão lambda apenas retorna o valor
-da propriedade Length para o item. LISTAGEM
-mostra como isso funciona.
+Você pode usar operadores sobre os resultados produzidos por
+operações. Você já usou um operador agregado
+em uma consulta LINQ. Você usou o
+operador `Count()` para contar o número de filmes
+em um grupo extraído pelo diretor.
 
-**LISTAGEM Agregado LINQ**
+Isso forneceu o número de filmes atribuídos a um determinado diretor.
+Você pode querer obter o comprimento total de todas os filmes
+atribuído a um diretor, e para isso você pode usar o
+operador agregado `Sum()`.
 
+```csharp
+select new
+{
+    Diretor = resumoDiretorFilme.Key,
+    TotalMinutos = resumoDiretorFilme.Sum(x => x.Minutos)
+};
+```
+
+O parâmetro para o operador `Sum` é uma *expressão lambda*
+que o grupo usa para obter o valor a ser adicionado à soma total
+para esse item.
+
+Para obter a soma das durações dos filmes, a expressão lambda apenas 
+retorna o valor da propriedade `Length` para o item.
+
+**LISTAGEM LINQ Agregado**
 
 ```csharp
 var resumoDoDiretor =
@@ -691,16 +750,48 @@ Tim Burton                                     261
 ```
 
 
-Você pode usar Average, Max e Min para gerar
-outros itens de informação agregada. Você também pode
-crie seu próprio comportamento Agregado que será
-chamado em cada item sucessivo no grupo e Will
-gerar um único resultado agregado.
+Você pode usar `Average`, `Max` e `Min` para gerar
+outros itens de informação agregada:
+
+```csharp
+var resumoDoDiretor2 =
+from filme in filmes
+join diretor in diretores
+on filme.DiretorId equals diretor.Id
+group filme by diretor.Nome
+into resumoDiretorFilme
+select new
+{
+    Diretor = resumoDiretorFilme.Key,
+    TotalMinutos = resumoDiretorFilme.Sum(x => x.Minutos),
+    MediaMinutos = (int)resumoDiretorFilme.Average(x => x.Minutos),
+    MinMinutos = resumoDiretorFilme.Min(x => x.Minutos),
+    MaxMinutos = resumoDiretorFilme.Max(x => x.Minutos)
+};
+
+Console.WriteLine($"{"Nome Diretor",-30}{"Total",10}{"Média",10}{"Mínimo",10}{"Máximo",10}");
+Console.WriteLine(new string('=', 70));
+foreach (var item in resumoDoDiretor2)
+{
+    Console.WriteLine($"{item.Diretor,-30}{item.TotalMinutos,10}{item.MediaMinutos,10}{item.MinMinutos,10}{item.MaxMinutos,10}");
+}
+Console.WriteLine();
+
+```
+
+O que dá o resultado:
+
+```
+Nome Diretor                       Total     Média    Mínimo    Máximo
+======================================================================
+Quentin Tarantino                    430       143       111       165
+James Cameron                        463       154       107       194
+Tim Burton                           261        87        76       108
+```
 
 **Criar consultas LINQ baseadas em método**
 
-A primeira consulta LINQ que você viu estava na LISTAGEM
-como mostrado aqui.
+A primeira consulta LINQ que você viu era assim:
 
 ```csharp
 IEnumerable<Filme> filmesSelecionados
@@ -710,19 +801,18 @@ IEnumerable<Filme> filmesSelecionados
 ```
 
 
-A instrução de consulta usa a compreensão de consulta
-sintaxe, que inclui os operadores de, em,
-onde e selecione. O compilador usa isso para
-gerar uma chamada para o método Where no
-Coleção de filmes. Em outras palavras, o código
-que é realmente criado para realizar a consulta é o
+Essa instrução usa um tipo de **sintaxe de consulta**,
+que inclui os operadores `from`, `in`,
+`where` e `select`. O compilador usa isso para
+gerar uma chamada para o método `Where()` na
+coleção de `filmes`. Em outras palavras, o código
+que é **realmente criado** para realizar a consulta é a
 declaração abaixo:
 
 
 ```csharp
-IEnumerable<Filme> filmesSelecionados
-    = from filme in filmes
-        where filme.Diretor.Nome == "Tim Burton"
+IEnumerable<Filme> filmesSelecionados =
+    filmes.Where(filme => filme.Diretor.Nome == "Tim Burton")
         select filme;
 
 Imprimir(filmesSelecionados);
@@ -730,38 +820,33 @@ Imprimir(filmesSelecionados);
 
 
 
-O método Where aceita uma expressão lambda como
+O método `Where()` aceita uma expressão lambda como
 um parâmetro. Neste caso, a expressão lambda
 aceita uma filme como um parâmetro e retorna
-Verdadeiro se a propriedade Name do elemento Diretor em
-o Filme corresponde ao nome que está sendo
-selecionado.
+Verdadeiro se a propriedade `Nome` do elemento `Diretor` no 
+`Filme` corresponde ao nome que está sendo selecionado.
 
-Você viu pela primeira vez expressões lambda na Habilidade 1.4,
-“Crie e implemente eventos e retornos de chamada.”
-expressão lambda é um pedaço de comportamento que pode ser
-considerado como um objeto. Nesta situação o Onde
-método está recebendo um pedaço de comportamento que o
-método pode usar para determinar quais filmes selecionar.
+O método `Where()` está recebendo **um pedaço** de comportamento
+que o método pode usar para determinar quais filmes selecionar.
 
-Neste caso, o comportamento é “pegar uma pista e ver se o
-nome do diretor é Tim Burton. ”Você pode criar o seu próprio
-consultas baseadas em método em vez de usar o LINQ
-operadores. LISTAGEM mostra a consulta LINQ e o
+Neste caso, o comportamento é "pegar um filme e ver se o
+nome do diretor é Tim Burton".
+
+Você pode criar a sua própria **consulta baseada em método** em vez 
+de usar **operadores LINQ**.
+
+Abaixo vemos uma consulta LINQ e o
 comportamento baseado em método correspondente.
-
-**LISTAGEM Consulta baseada em método**
-
 
 ```csharp
 IEnumerable<Filme> filmesSelecionados
     = from filme in filmes
-        where filme.Diretor.Nome == "Tim Burton"
+        where filme.Diretor.Nome == "James Cameron"
         select filme;
 ```
 
 
-Implementação baseada em método desta consulta
+Implementação baseada em método desta consulta:
 
 
 ```csharp
@@ -770,34 +855,34 @@ filmes.Where(filme => filme.Diretor.Nome == "James Cameron");
 ```
 
 
-Programas podem usar os métodos LINQ que (e
+Programas podem usar os métodos LINQ (e
 executar consultas LINQ) em coleções de dados, como
 listas e matrizes, e também em conexões de banco de dados.
-Os métodos que implementam os comportamentos do LINQ
-não são adicionados às classes que os utilizam. Em vez de
-eles são implementados como métodos de extensão. Você pode
-saiba mais sobre métodos de extensão na Habilidade 2.1, em
-a seção “Métodos de extensão”.
 
-**Consultar dados usando consulta
-sintaxe de compreensão**
+> Importante: Os métodos que implementam os comportamentos do LINQ
+> não são adicionados às classes que os utilizam (ex.: Listas, Dicionários, etc.). 
+> Em vez disso, eles são implementados como **métodos de extensão**.
 
-A frase “sintaxe de compreensão de consulta” refere-se a
-a maneira que você pode construir consultas LINQ para usar o
 
-Operadores C # fornecidos especificamente para expressar dados
-consultas. A intenção é fazer as declarações C #
-que se assemelham fortemente às consultas SQL que executam
-a mesma função. Isso facilita para os desenvolvedores
-familiarizado com a sintaxe SQL para usar o LINQ.
+**Consultar dados usando sintaxe de consulta**
 
-A LISTAGEM mostra uma consulta LINQ complexa que é
-com base na consulta LINQ usada na LISTAGEM para
-produzir um resumo dando a duração da filme por
-cada diretor. Isso usa o operador orderby para pedir
+A frase “sintaxe de consulta” refere-se a
+a maneira que você pode construir consultas LINQ para usar 
+operadores C# fornecidos especificamente para expressar 
+consultas de dados (from, join, select, etc).
+
+A intenção é fazer as declarações C#
+que se assemelham às consultas SQL que executam
+a mesma função (como no SQL Server). Isso facilita a vida dos
+desenvolvedores familiarizado com a sintaxe SQL para usar o LINQ.
+
+A listagem abaixo mostra uma consulta LINQ complexa que é
+feita com base na consulta LINQ usada na listagem para
+produzir um resumo, retornando a duração da filme por
+cada diretor. Ela usa o operador `orderby` para solicitar
 a saída pelo nome do diretor.
 
-**LISTAGEM Consulta completa**
+**LISTAGEM Consulta complexa**
 
 ```csharp
 var resumoDoDiretor =
@@ -827,30 +912,27 @@ GROUP BY [t1].[Nome]
 ```
 
 
-Esta saída foi gerada usando o LINQPad
-aplicação que permite que os programadores criem LINQ
-consultas e Ver o SQL e baseado em métodos
-implementações. A edição padrão é muito
-poderoso recurso para desenvolvedores e pode ser
+Esta saída foi gerada usando um aplicativo bem útil chamado **LINQPad**.
+Ele que permite que os programadores criem consultas LINQ
+e ver o SQL gerado a partir do LINQ. o LINQPad pode ser
 baixado gratuitamente de http://www.linqpad.net/.
-Selecione dados usando anonyn10us
-tipos
 
-Você viu pela primeira vez o uso de tipos anônimos no
-Seção “Tipos anônimos”, anteriormente neste capítulo.
+**Selecione dados usando anônimos tipos**
+
+Já vimos como trabalhar com “Tipos anônimos”, anteriormente.
+
 Os últimos exemplos de programas mostraram o uso de
-tipos anônimos movendo-se da criação de valores que
+tipos anônimos desde a criação de valores que
 resumir o conteúdo de um objeto de dados de origem
-exemplo extraindo apenas o diretor e título
-informações de um valor do Filme), para criar
-tipos completamente novos que contêm dados do
-banco de dados e os resultados dos operadores agregados.
+exemplo, extraindo apenas informações do diretor e título
+de um Filme, para criar tipos completamente novos que contêm 
+dados do banco de dados e os resultados dos operadores agregados.
 
 É importante notar que você também pode criar
 instâncias de tipo anônimas no SQL baseado em método
-consultas. LISTAGEM mostra o método baseado em
-implementação da consulta da LISTAGEM;
-tipo anônimo é mostrado em negrito. Observe o uso de um
+consultas. A listagem mostra o método **baseado em
+implementação da consulta** da listagem. O tipo anônimo é 
+mostrado em negrito. Observe o uso de um
 classe anônima intermediária que é usada para
 implementar a junção entre as duas consultas e
 gerar objetos que contenham diretor e filme 
@@ -889,20 +971,17 @@ Console.WriteLine();
 ```
 
 
-**Forçar execução de uma consulta**
+**Forçar a execução de uma consulta**
 
-O resultado de uma consulta LINQ é um item que pode ser
-iterado. Nós usamos a construção foreach para
-exibir os resultados das consultas. A avaliação real
-de uma consulta LINQ normalmente só ocorre quando
-programa começa a extrair resultados da consulta. este
-é chamado de execução adiada. Se você quiser forçar o
-execução de uma consulta, você pode usar o ToArray ()
-método conforme mostrado na LISTAGEM. A consulta é
-executada e o resultado retornado como uma matriz.
+Quando criamos uma consulta LINQ, seu resultado pode ser
+percorrido com uma instrução `foreach`.
 
-**LISTAGEM Forçar execução de consulta**
+Porém, a avaliação **real** de uma consulta LINQ normalmente 
+só ocorre quando o programa **começa a extrair** resultados da consulta.
 
+Isto é chamado de **execução adiada**. Se você quiser forçar o
+execução de uma consulta, você pode usar o método `ToArray()`
+conforme mostrado abaixo.
 
 ```csharp
 var diretorFilmeQuery = 
@@ -924,38 +1003,43 @@ foreach (var item in diretorFilmeArray)
 Console.WriteLine();
 ```
 
-Note que, no caso deste exemplo, o resultado será
-resultado. O programa foi pausado logo após a
-a variável Resultado do acompanhamento do diretor foi definida como
-resultado da consulta, e o depurador está mostrando o conteúdo
-do diretorFilme.
+A consulta é executada e o resultado retornado como **uma matriz**.
+
+O programa foi pausado logo após a variável Resultado do acompanhamento 
+do diretor foi definida como resultado da consulta, e o depurador está 
+mostrando o conteúdo da variável `diretorFilme`.
 
 
-[IMAGEM]
+![File8](file8.png)
+
+
+```
+James Cameron                 Avatar
+James Cameron                 Titanic
+James Cameron                 O Exterminador do Futuro
+```
+
 
 **FIGURA Resultados imediatos da consulta**
 
-Um resultado da consulta também fornece ToList e
-ToDictionary métodos que forçará a execução de
-a consulta e gerar um resultado imediato desse tipo.
-Se uma consulta retornar um valor singleton (por exemplo,
-resultado de uma operação de agregação, como soma ou
-contagem) será imediatamente avaliado.
-Leia, filtre, crie e modifique
-estruturas de dados usando LINQ para
-XML
+O resultado da consulta também fornece os métodos `ToList()` e
+`ToDictionary()`, que **forçarão a execução** da consulta e gerar 
+um **resultado imediato** desse tipo.
 
-Nesta seção, vamos investigar o LINQ para
-Recursos XML que permitem usar o LINQ
-construções para analisar documentos XML. As classes
-que fornecem esses comportamentos estão no
-Sistema. XML Namespace Linq.
-Exemplo de Documento XML
-O documento XML de amostra é mostrado a seguir. Contém
-dois itens do Filme que são mantidos dentro de
-Elemento Filmes. O texto da amostra
-documento é armazenado em uma variável de cadeia chamada
-XMLText.
+Se uma consulta retornar um valor *singleton* (por exemplo,
+resultado de uma operação de agregação, como soma ou
+contagem), esse valor **será imediatamente avaliado**.
+
+**Ler, filtrar, criar e modificar estruturas de dados usando LINQ para
+XML**
+
+Vamos começar a investigar recursos que permitem usar construções do LINQ
+para analisar documentos XML.
+
+As classes que fornecem esses comportamentos estão no namespace 
+Sistem.XML.Linq.
+
+**Exemplo de Documento XML**
 
 ```csharp
 string xmlText =
@@ -973,41 +1057,33 @@ string xmlText =
 "</Filmes>";
 ```
 
-**XDocument**
+Este documento XML contém dois itens do `Filme` que são mantidos dentro
+de elemento `Filmes`. O texto do documento é armazenado em 
+uma variável string chamada `xmlText`.
 
-Na seção anterior, "Consumir dados XML" você
-Aprendi a consumir dados XML em um programa
-usando a classe XMLDocument. Esta classe foi
-substituído em versões posteriores do .NET (versão 3.5
-em diante) pela classe XDocument, que permite a
+**Ler XML com LINQ para XML e XDocument**
+
+Anteriormente neste curso, você
+aprendeu a consumir dados XML em um programa
+usando a classe `XMLDocument`.
+
+Esta classe foi **substituída** em versões posteriores do .NET 
+(versão 3.5 em diante) pela classe `XDocument`, que permite o
 uso de consultas LINQ para analisar arquivos XML.
-Um programa pode criar uma instância do XDocument que
-representa o documento anterior usando o Parse
-método fornecido pela classe XDocument como mostrado
-Aqui.
 
+Um programa pode criar uma instância do `XDocument` que
+representa o documento anterior usando o método `Parse`
+fornecido pela classe XDocument como mostrado
+aqui:
 
 ```csharp
 XDocument documentoFilmes = XDocument.Parse(xmlText);
 ```
 
-
 O formato das consultas LINQ é um pouco diferente
-Ao trabalhar com XML. Isso porque a fonte
-
-da consulta é um conjunto filtrado de entradas XML do
-documento Fonte. A LISTAGEM mostra como isso funciona.
-A consulta seleciona todos os elementos "Filme" de
-o documento de origem. O resultado da consulta é um
-enumeração de itens do XElement que foram
-extraído do documento. A classe XElement é
-um desenvolvimento da classe XMLElement que inclui
-Comportamentos XML. O programa usa um foreach
-construção para trabalhar através da coleção de
-Resultados XElement, extraindo os valores de texto necessários.
-
-**LISTAGEM: Ler XML com LINQ**
-
+quando trabalhamos com XML. Isso porque a fonte
+da consulta é um conjunto filtrado de **entradas XML** do
+documento de origem:
 
 ```csharp
 IEnumerable<XElement> filmesSelecionados2 =
@@ -1021,18 +1097,28 @@ foreach (XElement item in filmesSelecionados2)
 }
 ```
 
+A listagem mostra como isso funciona. A consulta seleciona todos 
+os elementos "Filme" de
+o documento de origem. O resultado da consulta é um
+enumeração de itens do `XElement` que foram
+extraído do documento.
+
+A classe XElement é um desenvolvimento da classe XMLElement que inclui
+Comportamentos XML. O programa usa uma construção foreach
+para trabalhar através da coleção de resultados `XElement`, extraindo 
+os valores de texto necessários.
+
 
 **Filtrar dados XML com o LINQ para XML**
 
 O programa na LISTAGEM exibe todo o
 conteúdo do documento XML. Um programa pode
-realizar filtragem na consulta, adicionando um onde
-operador, assim como com o LIN Q que vimos antes.
-A LISTAGEM mostra como isso funciona. Note que o
-Onde a operação tem que extrair o valor de dados de
-o elemento para que ele possa realizar a comparação.
+realizar filtragem na consulta, adicionando um
+operador `where`, assim como com o LINQ que vimos antes.
 
-**LISTAGEM: Filtrar XML com LINQ**
+A listagem mostra como isso funciona. Note que o 
+operador `Where` tem que extrair o valor de dados do
+elemento para que ele possa realizar a comparação.
 
 ```csharp
 filmesSelecionados2 =
@@ -1049,13 +1135,14 @@ Console.WriteLine();
 ```
 
 
-As consultas LINQ que temos visto até agora têm
-foi expressa usando a compreensão de consulta. Isto é
-possível, no entanto, expressar a mesma pergunta no
-forma de uma consulta baseada em método. Os descendentes
-método retorna um objeto que fornece o Onde
-comportamento. O código a seguir mostra a consulta na LISTAGEM
-44 implementado como uma consulta baseada em método.
+As consultas LINQ que temos visto até agora foram criadas 
+usando a compreensão de consulta. Isto é
+possível, no entanto, expressar a mesma query na
+forma de uma consulta baseada em método.
+
+O método `Descendants` retorna um objeto que fornece o 
+comportamento `Where`. O código a seguir mostra a consulta na listagem
+implementado como uma *consulta baseada em método*.
 
 
 ```csharp
@@ -1076,10 +1163,9 @@ foreach (XElement item in filmesSelecionados2)
 **Crie XML com o LINQ para XML**
 
 Os recursos LINQ to XML incluem uma maneira muito fácil de
-criar documentos XML. O código na LISTAGEM
-cria um documento exatamente como o XML de amostra para
-esta seção. Note que o arranjo do
-chamadas de construtor para cada item XElement espelham
+criar documentos XML. O código a seguir cria um documento exatamente 
+como o XML de amostra para esta seção. Note que o arranjo do
+chamadas de construtor para cada item `XElement` espelham
 estrutura do documento.
 
 **LISTAGEM Criar XML com LINQ**
@@ -1101,13 +1187,12 @@ XElement filmesXML = new XElement("Filmes",
 
 **Modificar dados com o LINQ para XML**
 
-A classe XElement fornece métodos que podem ser
+A classe `XElement` fornece métodos que podem ser
 usado para modificar o conteúdo de um determinado elemento XML.
-O programa na LISTAGEM cria um que
-identifica todos os itens da filme que têm
-título "meu caminho" e, em seguida, usa o ReplaceWith
-método sobre os dados do título no elemento para mudar o
-título para o título correto, que é "meu caminho".
+O programa na listagem cria uma consulta que identifica todos os itens 
+do filme que têm título "meu caminho" e, em seguida, usa o método 
+`ReplaceWith` sobre os dados do título no elemento para mudar o título
+para um outro título.
 
 **LISTAGEM Modificar XML com LINQ**
 
@@ -1131,19 +1216,17 @@ Console.WriteLine();
 
 
 Como você viu Ao criar um novo documento XML,
-um XElement pode conter uma coleção de outros
-elementos para construir a estrutura da árvore de um XML
-documento. Você pode adicionar programaticamente e
-remover elementos para alterar a estrutura do XML
-documento.
+um `XElement` pode conter uma coleção de outros
+elementos para construir a estrutura da árvore de um documento XML.
+
+Você pode adicionar e remover programaticamente elementos para 
+alterar a estrutura do documento XML.
 
 Suponha que você decida adicionar um novo elemento de dados
-para Filme. Você quer armazenar o "gênero" do
-código na LISTAGEM encontra todos os itens em nossa
-dados de amostra que estão faltando um elemento de estilo e, em seguida,
-adiciona o elemento ao item.
+para `Filme`. Você quer armazenar o "gênero" do filme para todos os
+elementos `Filme`.
 
-**LISTAGEM: Adicionar XML com LINQ**
+**LISTAGEM: Adicionando XML com LINQ**
 
 
 ```csharp

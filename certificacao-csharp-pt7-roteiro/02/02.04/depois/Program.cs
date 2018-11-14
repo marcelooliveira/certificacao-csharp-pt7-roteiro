@@ -147,6 +147,35 @@ namespace _02_04
             }
             Console.WriteLine();
 
+
+
+
+
+
+
+            var resumoDoDiretor2 =
+            from filme in filmes
+            join diretor in diretores
+            on filme.DiretorId equals diretor.Id
+            group filme by diretor.Nome
+            into resumoDiretorFilme
+            select new
+            {
+                Diretor = resumoDiretorFilme.Key,
+                TotalMinutos = resumoDiretorFilme.Sum(x => x.Minutos),
+                MediaMinutos = (int)resumoDiretorFilme.Average(x => x.Minutos),
+                MinMinutos = resumoDiretorFilme.Min(x => x.Minutos),
+                MaxMinutos = resumoDiretorFilme.Max(x => x.Minutos)
+            };
+
+            Console.WriteLine($"{"Nome Diretor",-30}{"Total",10}{"Média",10}{"Mínimo",10}{"Máximo",10}");
+            Console.WriteLine(new string('=', 70));
+            foreach (var item in resumoDoDiretor2)
+            {
+                Console.WriteLine($"{item.Diretor,-30}{item.TotalMinutos,10}{item.MediaMinutos,10}{item.MinMinutos,10}{item.MaxMinutos,10}");
+            }
+            Console.WriteLine();
+
             Console.ReadKey();
         }
 
