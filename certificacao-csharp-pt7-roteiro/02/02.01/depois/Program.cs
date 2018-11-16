@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 
-namespace _01_03
+namespace _02_01
 {
     class Program
     {
@@ -36,41 +36,6 @@ namespace _01_03
             //IEnumerable<Filme> filmesSelecionados = filmes;
             //Imprimir(filmesSelecionados);
 
-            //IEnumerable<Filme> filmesSelecionados
-            //    = from f in filmes select f;
-            //Imprimir(filmesSelecionados);
-
-            IEnumerable<Filme> filmesSelecionados
-                = from filme in filmes
-                  where filme.Diretor.Nome == "Tim Burton"
-                  select filme;
-
-            Imprimir(filmesSelecionados);
-
-            //string nome = "Steven Spielberg";
-            //int ano = 1984;
-            //int teste = ano - nome;
-
-            var selecionados =
-            from filme in filmes
-            where filme.Diretor.Nome == "Tim Burton"
-            select filme;
-
-            Imprimir(filmesSelecionados);
-
-            var selecionados2 =
-            from filme in filmes
-            where filme.Diretor.Nome == "Tim Burton"
-            select new FilmeResumido
-            {
-                NomeDiretor = filme.Diretor.Nome,
-                Titulo = filme.Titulo
-            };
-
-            Imprimir(selecionados2);
-
-
-                       
             Console.ReadKey();
         }
 
