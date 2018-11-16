@@ -2,51 +2,6 @@
 
 namespace _01_04
 {
-    //class Program
-    //{
-    //    delegate int Operacao(int a, int b);
-
-    //    static int Subtrair(int a, int b)
-    //    {
-    //        Console.WriteLine("Foi chamado: Subtrair");
-    //        return a - b;
-    //    }
-
-    //    static void Main(string[] args)
-    //    {
-    //        //Operacao adicionar = (a, b) => a + b;
-
-    //        Operacao adicionar = (a, b) =>
-    //        {
-    //            Console.WriteLine("Foi chamado: adicionar");
-    //            return a + b;
-    //        };
-
-    //        Console.WriteLine(adicionar(2, 2));
-
-    //        Operacao op = Subtrair;
-    //        Console.WriteLine(op(2, 2));
-    //        Console.ReadKey();
-    //    }
-    //}
-
-    //class Program
-    //{
-    //    delegate int GetValor();
-    //    static GetValor getValorLocal;
-    //    static void SetValorLocal()
-    //    {
-    //        int valorLocal = 99;
-    //        getValorLocal = () => valorLocal;
-    //    }
-    //    static void Main(string[] args)
-    //    {
-    //        SetValorLocal();
-    //        Console.WriteLine("Valor de valorLocal: {0}", getValorLocal());
-    //        Console.ReadKey();
-    //    }
-    //}
-
     class Program
     {
         static Func<int, int, int> adicionar = (a, b) => a + b;
