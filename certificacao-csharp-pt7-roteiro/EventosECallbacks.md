@@ -959,7 +959,7 @@ class Program
 }
 ```
 
-**Tipos nativos para uso com expressões lambda **
+**Tipos nativos para uso com expressões lambda**
 
 Considere as três declarações a seguir:
 

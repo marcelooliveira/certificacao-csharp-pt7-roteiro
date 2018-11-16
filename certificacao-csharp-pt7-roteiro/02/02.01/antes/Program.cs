@@ -9,32 +9,7 @@ namespace _02_01
     {
         static void Main(string[] args)
         {
-            List<Diretor> diretores = GetDiretores();
-            List<Filme> filmes = GetFilmes();
-
             Console.ReadKey();
-        }
-
-        private static void Imprimir(IEnumerable<Filme> filmes)
-        {
-            Console.WriteLine($"{"Título",-40}{"Diretor",-20}{"Ano",4}");
-            Console.WriteLine(new string('=', 64));
-            foreach (var filme in filmes)
-            {
-                Console.WriteLine($"{filme.Titulo,-40}{filme.Diretor.Nome,-20}{filme.Ano}");
-            }
-            Console.WriteLine();
-        }
-
-        private static void Imprimir(IEnumerable<FilmeResumido> filmes)
-        {
-            Console.WriteLine($"{"Título",-40}{"Diretor",-20}");
-            Console.WriteLine(new string('=', 60));
-            foreach (var filme in filmes)
-            {
-                Console.WriteLine($"{filme.Titulo,-40}{filme.NomeDiretor,-20}");
-            }
-            Console.WriteLine();
         }
 
         private static List<Diretor> GetDiretores()
