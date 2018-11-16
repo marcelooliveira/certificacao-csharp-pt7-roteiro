@@ -1004,6 +1004,14 @@ métodos que aceitam valores e retornam resultados:
 static Func<int, int, int> adicionar = (a, b) => a + b;
 ```
 
+```csharp
+static void Main()
+{
+    Console.WriteLine($"adicionar(2, 3): {adicionar(2, 3)}");
+    Console.ReadKey();
+}
+```
+
 Existem versões do tipo Func que aceitam
 até 16 itens de entrada. O método *adicionar* aqui aceita
 dois inteiros e retorna um inteiro como resultado.
@@ -1021,6 +1029,16 @@ e depois a imprime no console.
 static Action<string> logMensagem = (mensagem) => Console.WriteLine(mensagem);
 ```
 
+```csharp
+static void Main()
+{
+    Console.WriteLine($"adicionar(2, 3): {adicionar(2, 3)}");
+    Console.WriteLine($"logMensagem('esta é uma Action')");
+    logMensagem("esta é uma Action");
+    Console.ReadKey();
+}
+```
+
 Para diferentes formas de registrar o delegate logMensagem pode ser anexado ao
 outros métodos que salvam os dados do log em um arquivo.
 
@@ -1031,6 +1049,16 @@ abaixo retorna true se o valor for divisível por 3.
 
 ```csharp
 static Predicate<int> divisivelPor3 = (i) => i % 3 == 0;
+```
+
+```csharp
+static void Main()
+{
+    var numeros = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    var divisiveis = Array.FindAll(numeros, divisivelPor3);
+    Console.WriteLine("Divisíveis por 3: " + string.Join(',', divisiveis));
+    Console.ReadKey();
+}
 ```
 
 **Métodos anônimos**
