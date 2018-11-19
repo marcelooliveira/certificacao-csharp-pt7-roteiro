@@ -3,6 +3,8 @@
 Vamos começar o curso com um uma simples classe chamada `Campainha`, cuja
 única função é tocar. 
 
+![Img1](img1.png)
+
 ```csharp
 class Campainha
 {
@@ -29,7 +31,7 @@ class Program
 
 Note como a execução do programa segue uma ordem sequencial:
 
-1. E vamos criar um programa que instanciando essa classe
+1. Vamos criar um programa que instanciando essa classe
 2. Em seguida, tocamos a campainha, chamando o método da classe
 3. Depois, esperamos o usuário teclar algo
 
@@ -447,11 +449,11 @@ assinante receba uma notificação de que um evento de campainha
 foi gerado, mas não fornece ao assinante
 qualquer descrição do evento.
 
-
-
 Agora imagine uma campainha do mundo real, onde você tem um sistema
 de porteiro eletrônico de um prédio, que permite acionar a campainha de um 
 apartamento específico.
+
+![Img2](img2.png)
 
 Seria útil se os assinantes pode receber informações sobre a 
 campainha, como por exemplo, o número do apartamento.
